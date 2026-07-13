@@ -12,11 +12,13 @@
 
 html {
   scroll-behavior: smooth;
+  color: #1a1a1a;
 }
 
 body {
-  background: #ffffff;
-  color: #1a1a1a;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #1a1a1a !important;
 }
 
 section[id] {

@@ -5,17 +5,20 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Map, Clock } from "lucide-react";
 import { excursiones } from "@/data/excursiones";
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
 
 function BadgeDificultad({ nivel }: { nivel: string }) {
   const styles: Record<string, string> = {
-    Baja: "bg-green-500 text-white",
-    Media: "bg-brand-orange text-white",
-    "Media / Alta": "bg-yellow-500 text-black",
-    Alta: "bg-red-600 text-white",
+    Baja: "bg-green-500",
+    Media: "bg-brand-orange",
+    "Media / Alta": "bg-yellow-500",
+    Alta: "bg-red-600",
   };
   return (
     <span
-      className={`rounded-full px-3 py-0.5 text-xs font-bold ${styles[nivel] ?? "bg-brand-orange text-white"}`}
+      className={`rounded-full px-3 py-0.5 text-xs font-bold ${styles[nivel] ?? "bg-brand-orange"}`}
+      style={{ color: nivel === "Media / Alta" ? "#000" : "white" }}
     >
       {nivel}
     </span>
@@ -28,6 +31,9 @@ const card = {
 };
 
 export default function Excursiones() {
+  const { lang } = useLang();
+  const tr = t[lang];
+
   return (
     <section id="excursiones" className="px-5 pb-20 pt-0">
       <div className="mx-auto max-w-5xl">
@@ -36,9 +42,10 @@ export default function Excursiones() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-14 text-center text-3xl font-extrabold text-brand-text md:text-4xl"
+          className="mb-14 text-center text-3xl font-extrabold md:text-4xl"
+          style={{ color: "#1a1a1a" }}
         >
-          Nuestras Excursiones
+          {tr.excursiones_titulo}
         </motion.h2>
 
         <motion.div
@@ -61,12 +68,13 @@ export default function Excursiones() {
                     src={exc.imagenHero}
                     alt={exc.nombre}
                     fill
-                    className="object-cover transition-transform duration-300 hover:scale-105"
+                    className="object-cover object-center transition-transform duration-300 hover:scale-105"
+                    style={exc.slug === "martial-aventura" ? { objectPosition: "center 75%" } : undefined}
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center bg-gradient-to-br from-brand-orange/30 to-brand-orange-mid/20">
-                    <span className="text-lg font-bold text-brand-text/50">
+                    <span className="text-lg font-bold" style={{ color: "rgba(26,26,26,0.5)" }}>
                       {exc.nombre}
                     </span>
                   </div>
@@ -78,11 +86,11 @@ export default function Excursiones() {
                   <BadgeDificultad nivel={exc.dificultad} />
                 </div>
 
-                <h3 className="mb-2 text-xl font-bold text-brand-text">
+                <h3 className="mb-2 text-xl font-bold" style={{ color: "#1a1a1a" }}>
                   {exc.nombre}
                 </h3>
 
-                <div className="mb-3 flex justify-center gap-4 text-sm text-brand-text-secondary">
+                <div className="mb-3 flex justify-center gap-4 text-sm" style={{ color: "#555555" }}>
                   <span className="flex items-center gap-1">
                     <Map size={14} /> {exc.distancia}
                   </span>
@@ -91,15 +99,15 @@ export default function Excursiones() {
                   </span>
                 </div>
 
-                <p className="mb-4 line-clamp-2 text-sm text-brand-text-secondary">
+                <p className="mb-4 line-clamp-2 text-sm" style={{ color: "#555555" }}>
                   {exc.descripcionCorta}
                 </p>
 
                 <Link
                   href={`/excursiones/${exc.slug}`}
-                  className="inline-block rounded-full border-2 border-brand-orange px-6 py-2 text-sm font-bold text-brand-orange transition-colors hover:bg-brand-orange hover:text-white"
+                  className="inline-block border-2 border-[#e85d04] text-[#e85d04] font-medium px-6 py-2 rounded-full hover:bg-[#e85d04] hover:text-white transition-colors"
                 >
-                  Ver más &rarr;
+                  {tr.excursiones_ver_mas}
                 </Link>
               </div>
             </motion.div>

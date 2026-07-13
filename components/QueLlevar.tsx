@@ -12,18 +12,8 @@ import {
   Sun,
   Glasses,
 } from "lucide-react";
-
-const items = [
-  { icon: Footprints, label: "Botas impermeables" },
-  { icon: Wind, label: "Campera impermeable" },
-  { icon: Layers, label: "Abrigo" },
-  { icon: Hand, label: "Guantes" },
-  { icon: HardHat, label: "Gorro" },
-  { icon: Backpack, label: "Mochila pequeña" },
-  { icon: Droplets, label: "Botella de agua" },
-  { icon: Sun, label: "Protector solar" },
-  { icon: Glasses, label: "Lentes de sol" },
-];
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
 
 const card = {
   hidden: { opacity: 0, y: 20 },
@@ -31,6 +21,21 @@ const card = {
 };
 
 export default function QueLlevar() {
+  const { lang } = useLang();
+  const tr = t[lang];
+
+  const items = [
+    { icon: Footprints, label: tr.llevar_botas },
+    { icon: Wind, label: tr.llevar_campera },
+    { icon: Layers, label: tr.llevar_abrigo },
+    { icon: Hand, label: tr.llevar_guantes },
+    { icon: HardHat, label: tr.llevar_gorro },
+    { icon: Backpack, label: tr.llevar_mochila },
+    { icon: Droplets, label: tr.llevar_agua },
+    { icon: Sun, label: tr.llevar_protector },
+    { icon: Glasses, label: tr.llevar_lentes },
+  ];
+
   return (
     <section id="que-llevar" className="px-5 py-20">
       <div className="mx-auto max-w-4xl">
@@ -39,9 +44,10 @@ export default function QueLlevar() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-14 text-center text-3xl font-extrabold text-brand-text md:text-4xl"
+          className="mb-14 text-center text-3xl font-extrabold md:text-4xl"
+          style={{ color: "#1a1a1a" }}
         >
-          ¿Qué llevar?
+          {tr.llevar_titulo}
         </motion.h2>
 
         <motion.div
@@ -59,9 +65,9 @@ export default function QueLlevar() {
               className="flex items-center gap-3 rounded-xl bg-white/60 p-4 shadow-sm backdrop-blur-sm"
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-orange">
-                <i.icon className="h-5 w-5 text-white" />
+                <i.icon className="h-5 w-5" color="white" />
               </div>
-              <span className="text-sm font-medium text-brand-text">
+              <span className="text-sm font-medium" style={{ color: "#1a1a1a" }}>
                 {i.label}
               </span>
             </motion.div>

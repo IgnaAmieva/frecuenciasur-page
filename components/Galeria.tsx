@@ -5,6 +5,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Lightbox from "@/components/Lightbox";
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
 
 const IMAGES = [
   { src: "/images/excursiones/laguna-esmeralda/IMG_7464.JPG", label: "Laguna Esmeralda" },
@@ -26,6 +28,8 @@ export default function Galeria() {
   const [direction, setDirection] = useState(1);
   const [paused, setPaused] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const { lang } = useLang();
+  const tr = t[lang];
 
   const go = useCallback((dir: number) => {
     setDirection(dir);
@@ -52,9 +56,10 @@ export default function Galeria() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-14 text-center text-3xl font-extrabold text-brand-text md:text-4xl"
+          className="mb-14 text-center text-3xl font-extrabold md:text-4xl"
+          style={{ color: "#1a1a1a" }}
         >
-          Galería
+          {tr.galeria_titulo}
         </motion.h2>
 
         <div
@@ -90,7 +95,10 @@ export default function Galeria() {
                   priority={index === 0}
                 />
                 {/* Label */}
-                <span className="absolute bottom-3 left-3 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                <span
+                  className="absolute bottom-3 left-3 rounded-full bg-black/60 px-3 py-1 text-xs font-medium backdrop-blur-sm"
+                  style={{ color: "white" }}
+                >
                   {IMAGES[index].label}
                 </span>
               </motion.div>

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
 
 const faqs = [
   {
@@ -39,6 +41,8 @@ const faqs = [
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const { lang } = useLang();
+  const tr = t[lang];
 
   return (
     <section id="faq" className="px-5 py-20">
@@ -48,9 +52,10 @@ export default function FAQ() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-14 text-center text-3xl font-extrabold text-brand-text md:text-4xl"
+          className="mb-14 text-center text-3xl font-extrabold md:text-4xl"
+          style={{ color: "#1a1a1a" }}
         >
-          Preguntas frecuentes
+          {tr.faq_titulo}
         </motion.h2>
 
         <motion.div
@@ -74,7 +79,7 @@ export default function FAQ() {
                   className="flex w-full items-center justify-between px-5 py-4 text-left"
                   aria-expanded={isOpen}
                 >
-                  <span className="pr-4 text-sm font-bold text-brand-text md:text-base">
+                  <span className="pr-4 text-sm font-bold md:text-base" style={{ color: "#1a1a1a" }}>
                     {faq.pregunta}
                   </span>
                   <motion.span
@@ -83,7 +88,8 @@ export default function FAQ() {
                   >
                     <ChevronDown
                       size={20}
-                      className="shrink-0 text-brand-text-secondary"
+                      className="shrink-0"
+                      style={{ color: "#555555" }}
                     />
                   </motion.span>
                 </button>
@@ -96,7 +102,7 @@ export default function FAQ() {
                   transition={{ duration: 0.25 }}
                   className="overflow-hidden"
                 >
-                  <p className="px-5 pb-4 text-sm leading-relaxed text-brand-text-secondary">
+                  <p className="px-5 pb-4 text-sm leading-relaxed" style={{ color: "#555555" }}>
                     {faq.respuesta}
                   </p>
                 </motion.div>

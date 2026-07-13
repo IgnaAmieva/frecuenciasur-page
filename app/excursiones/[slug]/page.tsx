@@ -1,7 +1,46 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { excursiones, excursionPorSlug } from "@/data/excursiones";
-import { ArrowLeft, CheckCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle,
+  UserCheck,
+  Car,
+  UtensilsCrossed,
+  Shield,
+  Coffee,
+  ShoppingBag,
+  Wrench,
+  Mountain,
+  Footprints,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
+const INCLUYE_ICONS: Record<string, LucideIcon> = {
+  "Guía profesional": UserCheck,
+  "Guía de Montaña": UserCheck,
+  "Mini trekking con guía experto en montaña": Footprints,
+  "Traslado ida y vuelta": Car,
+  "Traslado ida y vuelta al alojamiento": Car,
+  "Box Lunch": UtensilsCrossed,
+  "Seguro": Shield,
+  "Seguro de accidentes personales": Shield,
+  "Seguro de actividad": Shield,
+  "Almuerzo e infusión caliente": Coffee,
+  "Vianda de marcha": ShoppingBag,
+  "Equipo técnico: bastones, grampines, etc.": Wrench,
+  "Equipos de montaña: linternas, crampines y bastones": Wrench,
+  "Ascenso en Pisten Bully con cabina de pasajeros": Mountain,
+  "Cena en refugio de tres pasos con bebida libre": UtensilsCrossed,
+};
+
+function getIcon(label: string): LucideIcon {
+  if (INCLUYE_ICONS[label]) return INCLUYE_ICONS[label];
+  for (const key of Object.keys(INCLUYE_ICONS)) {
+    if (label.toLowerCase().includes(key.toLowerCase())) return INCLUYE_ICONS[key];
+  }
+  return CheckCircle;
+}
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ExcursionInfoGrid from "@/components/ExcursionInfoGrid";
@@ -85,18 +124,23 @@ export default async function ExcursionPage({
 
           {/* Qué incluye */}
           <section className="px-5 py-16">
-            <div className="mx-auto max-w-2xl">
-              <h2 className="mb-8 text-center text-2xl font-extrabold text-brand-text">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="mb-8 text-2xl font-extrabold" style={{ color: "#1a1a1a" }}>
                 Qué incluye
               </h2>
-              <ul className="space-y-3">
-                {exc.incluye.map((item) => (
-                  <li key={item} className="flex items-center gap-3">
-                    <CheckCircle size={20} className="shrink-0 text-brand-orange" />
-                    <span className="text-brand-text">{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+                {exc.incluye.map((item) => {
+                  const Icon = getIcon(item);
+                  return (
+                    <div key={item} className="flex flex-col items-center gap-2">
+                      <Icon size={28} color="#e85d04" />
+                      <span className="text-sm" style={{ color: "#374151" }}>
+                        {item}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </section>
 

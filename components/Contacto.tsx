@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
 
 function InstagramIcon() {
   return (
@@ -45,6 +47,9 @@ const fade = {
 };
 
 export default function Contacto() {
+  const { lang } = useLang();
+  const tr = t[lang];
+
   return (
     <section id="contacto" className="px-5 py-20">
       <motion.div
@@ -70,8 +75,8 @@ export default function Contacto() {
           </div>
 
           {/* Title */}
-          <h2 className="mt-3 text-center text-xl font-bold text-gray-800">
-            Contactanos
+          <h2 className="mt-3 text-center text-xl font-bold" style={{ color: "#1f2937" }}>
+            {tr.contacto_titulo}
           </h2>
 
           {/* Separator */}
@@ -85,7 +90,7 @@ export default function Contacto() {
             className="flex items-center gap-4 py-4 transition-transform hover:scale-[1.02]"
           >
             <InstagramIcon />
-            <span className="text-sm text-brand-text">
+            <span className="text-sm" style={{ color: "#1a1a1a" }}>
               @frecuenciasur.ushuaia
             </span>
           </a>
@@ -100,7 +105,7 @@ export default function Contacto() {
             className="flex items-center gap-4 py-4 transition-transform hover:scale-[1.02]"
           >
             <WhatsAppIcon />
-            <span className="text-sm text-brand-text">
+            <span className="text-sm" style={{ color: "#1a1a1a" }}>
               +54 9 2901 48-9265
             </span>
           </a>
@@ -113,7 +118,7 @@ export default function Contacto() {
             className="flex items-center gap-4 py-4 transition-transform hover:scale-[1.02]"
           >
             <EmailIcon />
-            <span className="text-sm text-brand-text">
+            <span className="text-sm" style={{ color: "#1a1a1a" }}>
               frecuenciasurushuaia@gmail.com
             </span>
           </a>

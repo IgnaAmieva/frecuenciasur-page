@@ -1,26 +1,48 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
 
-const links = [
-  { href: "#nosotros", label: "Nosotros" },
-  { href: "#excursiones", label: "Excursiones" },
-  { href: "#galeria", label: "Galería" },
-  { href: "#contacto", label: "Contacto" },
-];
+const FLAGS: Record<string, string> = {
+  es: "🇦🇷",
+  en: "🇺🇸",
+  pt: "🇧🇷",
+};
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
+  const { lang, setLang } = useLang();
+  const tr = t[lang];
+
+  const links = [
+    { href: "#nosotros", label: tr.nav_nosotros },
+    { href: "#excursiones", label: tr.nav_excursiones },
+    { href: "#galeria", label: tr.nav_galeria },
+    { href: "#contacto", label: tr.nav_contacto },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
   return (
@@ -41,38 +63,74 @@ export default function Navbar() {
             className="rounded-full"
           />
           <span
-            className={`text-sm font-bold transition-colors duration-300 sm:text-base ${
-              scrolled ? "text-gray-800" : "text-white"
-            }`}
+            style={{ color: scrolled ? "#1f2937" : "white" }}
+            className="text-sm font-bold transition-colors duration-300 sm:text-base"
           >
             Frecuencia Sur Ushuaia
           </span>
         </Link>
 
-        <ul className="hidden items-center gap-8 md:flex">
-          {links.map((link) => (
-            <li key={link.href}>
-              <a
-                href={link.href}
-                className={`text-sm font-medium transition-colors duration-300 hover:text-brand-orange ${
-                  scrolled ? "text-gray-800" : "text-white"
-                }`}
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <div className="flex items-center gap-4">
+          <ul className="hidden items-center gap-8 md:flex">
+            {links.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  style={{ color: scrolled ? "#1f2937" : "white" }}
+                  className="text-sm font-medium transition-colors duration-300 hover:text-brand-orange"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
 
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className={`transition-colors duration-300 md:hidden ${
-            scrolled ? "text-gray-800" : "text-white"
-          }`}
-          aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
-        >
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+          {/* Language selector */}
+          <div ref={langRef} className="relative">
+            <button
+              onClick={() => setLangOpen(!langOpen)}
+              className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium transition-colors ${
+                scrolled
+                  ? "bg-gray-100 hover:bg-gray-200"
+                  : "bg-white/20 backdrop-blur-sm hover:bg-white/30"
+              }`}
+              style={{ color: scrolled ? "#1f2937" : "white" }}
+            >
+              <span>{FLAGS[lang]}</span>
+              <span>{lang.toUpperCase()}</span>
+            </button>
+
+            {langOpen && (
+              <div className="absolute right-0 top-full mt-1 overflow-hidden rounded-lg bg-white shadow-lg">
+                {(["es", "en", "pt"] as const).map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => {
+                      setLang(l);
+                      setLangOpen(false);
+                    }}
+                    className={`flex w-full items-center gap-2 px-4 py-2 text-xs font-medium transition-colors hover:bg-gray-50 ${
+                      l === lang ? "bg-gray-50" : ""
+                    }`}
+                    style={{ color: "#1a1a1a" }}
+                  >
+                    <span>{FLAGS[l]}</span>
+                    <span>{l.toUpperCase()}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            style={{ color: scrolled ? "#1f2937" : "white" }}
+            className="transition-colors duration-300 md:hidden"
+            aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+          >
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -94,9 +152,8 @@ export default function Navbar() {
                   <a
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
-                    className={`block py-3 transition-colors hover:text-brand-orange ${
-                      scrolled ? "text-gray-800" : "text-white"
-                    }`}
+                    style={{ color: scrolled ? "#1f2937" : "white" }}
+                    className="block py-3 transition-colors hover:text-brand-orange"
                   >
                     {link.label}
                   </a>

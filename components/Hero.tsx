@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
 
 const heroImages = [
   { src: "/images/excursiones/laguna-esmeralda/IMG_7464.JPG", excursion: "Laguna Esmeralda" },
@@ -20,6 +22,8 @@ const fade = {
 
 export default function Hero() {
   const [index, setIndex] = useState(0);
+  const { lang } = useLang();
+  const tr = t[lang];
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -66,12 +70,12 @@ export default function Hero() {
           transition={{ duration: 0.7 }}
           className="max-w-xl"
         >
-          <span className="block text-3xl font-light tracking-wide text-white md:text-5xl">
-            Descubrí el Fin del Mundo
+          <span style={{ color: "white" }} className="block text-3xl font-light tracking-wide md:text-5xl">
+            {tr.hero_titulo1}
           </span>
           <div className="mx-auto my-3 h-px w-12 bg-white/60" />
-          <span className="block text-4xl font-bold italic text-white md:text-6xl">
-            caminando
+          <span style={{ color: "white" }} className="block text-4xl font-bold italic md:text-6xl">
+            {tr.hero_titulo2}
           </span>
         </motion.h1>
 
@@ -83,9 +87,10 @@ export default function Hero() {
           href="https://wa.me/5492901489265?text=Hola%20Frecuencia%20Sur%2C%20quiero%20consultar%20sobre%20una%20excursi%C3%B3n."
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-8 max-w-xs rounded-full border border-white/40 bg-white/15 px-8 py-3 text-sm font-medium uppercase tracking-widest text-white backdrop-blur-sm transition hover:bg-white/25"
+          style={{ color: "white" }}
+          className="mt-8 max-w-xs rounded-full border border-white/40 bg-white/15 px-8 py-3 text-sm font-medium uppercase tracking-widest backdrop-blur-sm transition hover:bg-white/25"
         >
-          Reservar ahora
+          {tr.hero_boton}
         </motion.a>
       </motion.div>
 

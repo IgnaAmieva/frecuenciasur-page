@@ -1,11 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import { Camera, Music2, MessageCircle, Mail } from "lucide-react";
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
 
 const secciones = [
-  { href: "#nosotros", label: "Nosotros" },
-  { href: "#excursiones", label: "Excursiones" },
-  { href: "#galeria", label: "Galería" },
-  { href: "#contacto", label: "Contacto" },
+  { href: "#nosotros", key: "nav_nosotros" as const },
+  { href: "#excursiones", key: "nav_excursiones" as const },
+  { href: "#galeria", key: "nav_galeria" as const },
+  { href: "#contacto", key: "nav_contacto" as const },
 ];
 
 const redes = [
@@ -16,6 +20,9 @@ const redes = [
 ];
 
 export default function Footer() {
+  const { lang } = useLang();
+  const tr = t[lang];
+
   return (
     <footer style={{ backgroundColor: "#e85d04" }}>
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-5 py-10">
@@ -27,7 +34,7 @@ export default function Footer() {
             height={36}
             className="rounded-full"
           />
-          <span className="text-base font-bold text-white">
+          <span className="text-base font-bold" style={{ color: "white" }}>
             Frecuencia Sur Ushuaia
           </span>
         </div>
@@ -37,9 +44,10 @@ export default function Footer() {
             <a
               key={s.href}
               href={s.href}
-              className="text-sm text-white/80 transition-colors hover:text-white"
+              className="text-sm transition-colors hover:opacity-100"
+              style={{ color: "rgba(255,255,255,0.8)" }}
             >
-              {s.label}
+              {tr[s.key]}
             </a>
           ))}
         </nav>
@@ -52,16 +60,16 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={r.label}
-              className="text-white/80 transition-colors hover:text-white"
+              className="transition-colors hover:opacity-100"
+              style={{ color: "rgba(255,255,255,0.8)" }}
             >
               <r.icon size={20} />
             </a>
           ))}
         </div>
 
-        <p className="text-xs text-white/60">
-          &copy; {new Date().getFullYear()} Frecuencia Sur Ushuaia. Todos los
-          derechos reservados.
+        <p className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
+          &copy; {new Date().getFullYear()} Frecuencia Sur Ushuaia. {tr.footer_derechos}.
         </p>
       </div>
     </footer>

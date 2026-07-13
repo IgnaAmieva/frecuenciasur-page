@@ -10,15 +10,8 @@ import {
   UtensilsCrossed,
   Shield,
 } from "lucide-react";
-
-const ventajas = [
-  { icon: Award, titulo: "Guías especializados", desc: "Profesionales certificados con años en montaña" },
-  { icon: Users, titulo: "Grupos reducidos", desc: "Máximo 8 personas por salida" },
-  { icon: HeartHandshake, titulo: "Atención personalizada", desc: "Te acompañamos en todo momento" },
-  { icon: Car, titulo: "Traslados incluidos", desc: "Buscamos y dejamos en tu alojamiento" },
-  { icon: UtensilsCrossed, titulo: "Box Lunch incluido", desc: "Almuerzo en todas las excursiones" },
-  { icon: Shield, titulo: "Seguridad garantizada", desc: "Equipo de primeros auxilios y seguros" },
-];
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
 
 const item = {
   hidden: { opacity: 0, y: 20 },
@@ -26,6 +19,18 @@ const item = {
 };
 
 export default function Ventajas() {
+  const { lang } = useLang();
+  const tr = t[lang];
+
+  const ventajas = [
+    { icon: Award, titulo: tr.ventajas_guias, desc: tr.ventajas_guias_desc },
+    { icon: Users, titulo: tr.ventajas_grupos, desc: tr.ventajas_grupos_desc },
+    { icon: HeartHandshake, titulo: tr.ventajas_atencion, desc: tr.ventajas_atencion_desc },
+    { icon: Car, titulo: tr.ventajas_traslados, desc: tr.ventajas_traslados_desc },
+    { icon: UtensilsCrossed, titulo: tr.ventajas_lunch, desc: tr.ventajas_lunch_desc },
+    { icon: Shield, titulo: tr.ventajas_seguridad, desc: tr.ventajas_seguridad_desc },
+  ];
+
   return (
     <section id="ventajas" className="px-5 py-20">
       <div className="mx-auto max-w-4xl">
@@ -34,9 +39,10 @@ export default function Ventajas() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-14 text-center text-3xl font-extrabold text-brand-text md:text-4xl"
+          className="mb-14 text-center text-3xl font-extrabold md:text-4xl"
+          style={{ color: "#1a1a1a" }}
         >
-          ¿Por qué elegirnos?
+          {tr.ventajas_titulo}
         </motion.h2>
 
         <motion.div
@@ -54,12 +60,12 @@ export default function Ventajas() {
               className="flex flex-col items-center text-center"
             >
               <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-brand-orange md:h-24 md:w-24">
-                <v.icon className="h-8 w-8 text-white md:h-10 md:w-10" />
+                <v.icon className="h-8 w-8 md:h-10 md:w-10" color="white" />
               </div>
-              <h3 className="text-sm font-bold text-brand-text md:text-base">
+              <h3 className="text-sm font-bold md:text-base" style={{ color: "#1a1a1a" }}>
                 {v.titulo}
               </h3>
-              <p className="mt-1 text-xs text-brand-text-secondary md:text-sm">
+              <p className="mt-1 text-xs md:text-sm" style={{ color: "#555555" }}>
                 {v.desc}
               </p>
             </motion.div>

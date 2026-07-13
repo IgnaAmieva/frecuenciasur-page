@@ -7,7 +7,6 @@ import Contacto from "@/components/Contacto";
 import QueIncluye from "@/components/QueIncluye";
 import QueLlevar from "@/components/QueLlevar";
 import Galeria from "@/components/Galeria";
-import Testimonios from "@/components/Testimonios";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 
@@ -40,7 +39,6 @@ export default function Home() {
           <QueIncluye />
           <QueLlevar />
           <Galeria />
-          <Testimonios />
           <FAQ />
         </div>
       </div>
