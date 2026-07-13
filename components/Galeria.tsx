@@ -1,83 +1,145 @@
 "use client";
 
-import { useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { motion, useInView } from "framer-motion";
-import { productos } from "@/data/productos";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Lightbox from "@/components/Lightbox";
 
-function FadeIn({
-  children,
-  className = "",
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay, ease: "easeOut" }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-// Pick a few products with images for the gallery mosaic
-const GALLERY_ITEMS = [
-  { src: productos.find((p) => p.id === "whey-platinum-3kg")!.image, alt: "Whey Protein Platinum 3kg", span: "md:col-span-2 md:row-span-2" },
-  { src: productos.find((p) => p.id === "crea-300-pote-star")!.image, alt: "Creatina 300g Pote" },
-  { src: productos.find((p) => p.id === "pump-3d-ripped-315g")!.image, alt: "Pump 3D Ripped 315g" },
-  { src: productos.find((p) => p.id === "amino-energy-270g-optimun")!.image, alt: "Amino Energy 270g" },
-  { src: productos.find((p) => p.id === "colageno-210g-frutos-rojos")!.image, alt: "Colágeno Frutos Rojos" },
-  { src: productos.find((p) => p.id === "whey-syntha6-5lb-bsn")!.image, alt: "Syntha-6 5 lbs", span: "md:col-span-2" },
+const IMAGES = [
+  { src: "/images/excursiones/laguna-esmeralda/IMG_7464.JPG", label: "Laguna Esmeralda" },
+  { src: "/images/excursiones/laguna-esmeralda/IMG_8330.JPG", label: "Laguna Esmeralda" },
+  { src: "/images/excursiones/glaciar-vinciguerra/IMG_1464.jpg", label: "Glaciar Vinciguerra" },
+  { src: "/images/excursiones/glaciar-vinciguerra/IMG_8633.JPG", label: "Glaciar Vinciguerra" },
+  { src: "/images/excursiones/glaciar-ojo-del-albino/DJI_0658.JPG", label: "Glaciar Ojo del Albino" },
+  { src: "/images/excursiones/glaciar-ojo-del-albino/IMG_4474.JPG", label: "Glaciar Ojo del Albino" },
+  { src: "/images/excursiones/laguna-cinco-hermanos/IMG_5492.jpg", label: "Laguna Cinco Hermanos" },
+  { src: "/images/excursiones/laguna-cinco-hermanos/IMG_6270.JPG", label: "Laguna Cinco Hermanos" },
+  { src: "/images/excursiones/martial-aventura/8c51fea1-f555-4f23-933a-ebb5c165b340.jpg", label: "Martial Aventura" },
+  { src: "/images/excursiones/martial-aventura/IMG_0620.JPG", label: "Martial Aventura" },
+  { src: "/images/excursiones/monte-susana/IMG_5732.JPG", label: "Monte Susana" },
+  { src: "/images/excursiones/monte-susana/IMG_7373.JPG", label: "Monte Susana" },
 ];
 
 export default function Galeria() {
-  return (
-    <section id="galeria" className="py-24 lg:py-32 bg-brand-dark">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <FadeIn>
-          <div className="text-center mb-16">
-            <p className="text-brand-gold text-sm tracking-[0.2em] uppercase font-semibold mb-3">
-              Galería
-            </p>
-            <h2 className="text-4xl lg:text-5xl font-extrabold">
-              Nuestras{" "}
-              <span className="text-gradient-gold">marcas</span>
-            </h2>
-            <div className="w-16 mx-auto mt-4 gold-divider" />
-          </div>
-        </FadeIn>
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [paused, setPaused] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
-          {GALLERY_ITEMS.map((item, i) => (
-            <FadeIn
-              key={item.src}
-              delay={i * 0.08}
-              className={item.span || ""}
-            >
-              <div className="relative aspect-square rounded-2xl overflow-hidden group bg-brand-black border border-brand-gold/10">
+  const go = useCallback((dir: number) => {
+    setDirection(dir);
+    setIndex((prev) => (prev + dir + IMAGES.length) % IMAGES.length);
+  }, []);
+
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => go(1), 4000);
+    return () => clearInterval(id);
+  }, [paused, go]);
+
+  const variants = {
+    enter: (d: number) => ({ x: d > 0 ? 300 : -300, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (d: number) => ({ x: d > 0 ? -300 : 300, opacity: 0 }),
+  };
+
+  return (
+    <section id="galeria" className="px-5 py-20">
+      <div className="mx-auto max-w-3xl">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-14 text-center text-3xl font-extrabold text-brand-text md:text-4xl"
+        >
+          Galería
+        </motion.h2>
+
+        <div
+          className="relative"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onTouchStart={() => setPaused(true)}
+          onTouchEnd={() => setPaused(false)}
+        >
+          {/* Image container */}
+          <div
+            className="relative w-full cursor-pointer overflow-hidden rounded-xl"
+            style={{ aspectRatio: "16/9" }}
+            onClick={() => setLightboxIndex(index)}
+          >
+            <AnimatePresence initial={false} custom={direction} mode="wait">
+              <motion.div
+                key={index}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+                className="absolute inset-0"
+              >
                 <Image
-                  src={item.src}
-                  alt={item.alt}
+                  src={IMAGES[index].src}
+                  alt={IMAGES[index].label}
                   fill
-                  className="object-contain p-6 transition-transform duration-500 group-hover:scale-110"
-                  sizes="(max-width: 768px) 50vw, 25vw"
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 768px"
+                  priority={index === 0}
                 />
-                {/* Gold overlay on hover */}
-                <div className="absolute inset-0 bg-brand-gold/0 group-hover:bg-brand-gold/5 transition-colors duration-300" />
-              </div>
-            </FadeIn>
+                {/* Label */}
+                <span className="absolute bottom-3 left-3 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                  {IMAGES[index].label}
+                </span>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Prev / Next */}
+          <button
+            onClick={() => go(-1)}
+            aria-label="Anterior"
+            className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-brand-orange shadow backdrop-blur transition hover:bg-brand-orange hover:text-white"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <button
+            onClick={() => go(1)}
+            aria-label="Siguiente"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-brand-orange shadow backdrop-blur transition hover:bg-brand-orange hover:text-white"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </div>
+
+        {/* Dots */}
+        <div className="mt-4 flex justify-center gap-2">
+          {IMAGES.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setDirection(i > index ? 1 : -1);
+                setIndex(i);
+              }}
+              aria-label={`Ir a foto ${i + 1}`}
+              className={`h-2.5 w-2.5 rounded-full transition-colors ${
+                i === index ? "bg-brand-orange" : "bg-gray-300"
+              }`}
+            />
           ))}
         </div>
       </div>
+
+      {lightboxIndex !== null && (
+        <Lightbox
+          images={IMAGES.map((img) => img.src)}
+          labels={IMAGES.map((img) => img.label)}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
+      )}
     </section>
   );
 }

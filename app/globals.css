@@ -1,109 +1,24 @@
 @import "tailwindcss";
 
-/* ===== A&V Suplementos — Custom Theme (Tailwind v4) ===== */
 @theme {
-  --color-brand-black: #0A0A0A;
-  --color-brand-dark: #121212;
-  --color-brand-gold: #C9A227;
-  --color-brand-gold-light: #E0BF4F;
-  --color-brand-silver: #C0C0C0;
-  --color-brand-silver-dark: #8A8A8A;
-  --color-brand-light: #F5F5F5;
-
-  --font-sans: "Poppins", system-ui, sans-serif;
+  --color-brand-white: #ffffff;
+  --color-brand-orange: #e85d04;
+  --color-brand-orange-mid: #f48c06;
+  --color-brand-orange-light: #fde8d8;
+  --color-brand-text: #1a1a1a;
+  --color-brand-text-secondary: #555555;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
 }
 
-/* ===== Base ===== */
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  margin: 0;
-  font-family: var(--font-sans);
-  color: var(--color-brand-light);
-  background-color: var(--color-brand-black);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background: #ffffff;
+  color: #1a1a1a;
 }
 
-::selection {
-  background-color: var(--color-brand-gold);
-  color: var(--color-brand-black);
-}
-
-/* ===== Scroll offset for anchor links (navbar height) ===== */
 section[id] {
-  scroll-margin-top: 80px;
-}
-
-/* ===== Skip link ===== */
-.skip-link {
-  position: absolute;
-  left: -999px;
-  top: 0;
-  z-index: 9999;
-  background: var(--color-brand-gold);
-  color: var(--color-brand-black);
-  padding: 0.75rem 1rem;
-  border-radius: 0 0 0.75rem 0.75rem;
-  font-weight: 600;
-}
-.skip-link:focus {
-  left: 0;
-}
-
-/* ===== Gradient text utilities ===== */
-.text-gradient-gold {
-  background: linear-gradient(135deg, #C9A227 0%, #E0BF4F 50%, #C9A227 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-gradient-silver {
-  background: linear-gradient(135deg, #8A8A8A 0%, #C0C0C0 50%, #E0E0E0 75%, #8A8A8A 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ===== Gold divider ===== */
-.gold-divider {
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-brand-gold), transparent);
-}
-
-/* ===== Animations ===== */
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.8s ease-out both;
-}
-
-@keyframes spinY {
-  from { transform: rotateY(0deg); }
-  to { transform: rotateY(360deg); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-in-up {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
+  scroll-margin-top: 72px;
 }
