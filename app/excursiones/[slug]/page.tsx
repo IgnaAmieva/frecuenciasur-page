@@ -60,6 +60,10 @@ export default async function ExcursionPage({
   const exc = excursionPorSlug(slug);
   if (!exc) notFound();
 
+  const heroObjectPosition: Record<string, string> = {
+    "esqui-de-travesia": "center 40%",
+  };
+
   return (
     <>
       <Navbar />
@@ -70,6 +74,7 @@ export default async function ExcursionPage({
         imagenHero={exc.imagenHero}
         nombre={exc.nombre}
         dificultad={exc.dificultad}
+        objectPosition={heroObjectPosition[slug] ?? "center center"}
       />
 
       {/* Content with gradient */}

@@ -10,6 +10,7 @@ interface Props {
   nombre: string;
   dificultad: string;
   precio?: string;
+  objectPosition?: string;
 }
 
 export default function ExcursionHeroCarousel({
@@ -18,6 +19,7 @@ export default function ExcursionHeroCarousel({
   nombre,
   dificultad,
   precio,
+  objectPosition = "center center",
 }: Props) {
   const fotos = imagenes.length > 0 ? imagenes : [imagenHero];
   const [index, setIndex] = useState(0);
@@ -47,6 +49,7 @@ export default function ExcursionHeroCarousel({
             alt={`${nombre} — foto ${index + 1}`}
             fill
             className="object-cover"
+            style={{ objectPosition }}
             sizes="100vw"
             priority={index === 0}
           />
