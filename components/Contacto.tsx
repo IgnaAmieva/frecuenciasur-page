@@ -46,7 +46,7 @@ const fade = {
   visible: { opacity: 1, y: 0 },
 };
 
-export default function Contacto() {
+export default function Contacto({ locale }: { locale?: string }) {
   const { lang } = useLang();
   const tr = t[lang];
 

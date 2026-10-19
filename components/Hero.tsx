@@ -5,6 +5,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/context/LangContext";
 import { t } from "@/lib/translations";
+import { homeSeo } from "@/lib/seo";
+import type { Locale } from "@/lib/i18n";
 
 const heroImages = [
   { src: "/images/excursiones/laguna-esmeralda/IMG_7464.JPG", excursion: "Laguna Esmeralda" },
@@ -20,10 +22,11 @@ const fade = {
   visible: { opacity: 1, y: 0 },
 };
 
-export default function Hero() {
+export default function Hero({ locale }: { locale: Locale }) {
   const [index, setIndex] = useState(0);
   const { lang } = useLang();
   const tr = t[lang];
+  const seo = homeSeo[locale];
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -65,19 +68,30 @@ export default function Hero() {
         transition={{ staggerChildren: 0.25 }}
         className="relative z-10 flex flex-col items-center px-5 text-center"
       >
+        {/* SEO H1 — visible kicker */}
         <motion.h1
+          variants={fade}
+          transition={{ duration: 0.5 }}
+          className="mb-4 text-sm font-medium uppercase tracking-widest text-white/80 md:text-base"
+        >
+          {seo.h1}
+        </motion.h1>
+
+        {/* Visual headline — not h1 */}
+        <motion.p
           variants={fade}
           transition={{ duration: 0.7 }}
           className="max-w-xl"
+          aria-hidden="true"
         >
           <span style={{ color: "white" }} className="block text-3xl font-light tracking-wide md:text-5xl">
             {tr.hero_titulo1}
           </span>
-          <div className="mx-auto my-3 h-px w-12 bg-white/60" />
+          <span className="mx-auto my-3 block h-px w-12 bg-white/60" />
           <span style={{ color: "white" }} className="block text-4xl font-bold italic md:text-6xl">
             {tr.hero_titulo2}
           </span>
-        </motion.h1>
+        </motion.p>
 
         <motion.a
           variants={fade}

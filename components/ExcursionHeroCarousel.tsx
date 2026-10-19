@@ -11,6 +11,7 @@ interface Props {
   dificultad: string;
   precio?: string;
   objectPosition?: string;
+  alts?: string[];
 }
 
 export default function ExcursionHeroCarousel({
@@ -20,6 +21,7 @@ export default function ExcursionHeroCarousel({
   dificultad,
   precio,
   objectPosition = "center center",
+  alts = [],
 }: Props) {
   const fotos = imagenes.length > 0 ? imagenes : [imagenHero];
   const [index, setIndex] = useState(0);
@@ -31,6 +33,11 @@ export default function ExcursionHeroCarousel({
     }, 3500);
     return () => clearInterval(id);
   }, [fotos.length]);
+
+  function getAlt(i: number): string {
+    if (alts.length === 0) return nombre;
+    return alts[i % alts.length];
+  }
 
   return (
     <section className="relative h-[60vh] w-full overflow-hidden md:h-[70vh]">
@@ -46,7 +53,7 @@ export default function ExcursionHeroCarousel({
         >
           <Image
             src={fotos[index]}
-            alt={`${nombre} — foto ${index + 1}`}
+            alt={getAlt(index)}
             fill
             className="object-cover"
             style={{ objectPosition }}
@@ -73,7 +80,7 @@ export default function ExcursionHeroCarousel({
               {precio.split(" ")[0]}
             </span>
             <span className="ml-2 text-base font-medium text-white/80">
-              por persona
+              {precio.split(" ").slice(1).join(" ")}
             </span>
           </div>
         )}

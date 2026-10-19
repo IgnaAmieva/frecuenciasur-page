@@ -5,47 +5,39 @@ import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useLang } from "@/context/LangContext";
 import { t } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
-const faqs = [
-  {
-    pregunta: "¿Necesito experiencia previa?",
-    respuesta:
-      "No para las excursiones de dificultad Media. Solo necesitás condición física básica y ganas de caminar. Para las de dificultad Media / Alta y Alta recomendamos experiencia previa en trekking.",
-  },
-  {
-    pregunta: "¿Las excursiones incluyen traslado?",
-    respuesta:
-      "Sí, todas nuestras excursiones incluyen traslado ida y vuelta. Te buscamos y te dejamos en tu alojamiento en Ushuaia.",
-  },
-  {
-    pregunta: "¿Qué pasa si llueve?",
-    respuesta:
-      "En Ushuaia la lluvia es parte de la experiencia. Salimos con lluvia leve. En caso de condiciones climáticas extremas, se reprograma la salida sin costo adicional.",
-  },
-  {
-    pregunta: "¿Se suspenden por mal clima?",
-    respuesta:
-      "Solo en caso de viento fuerte, nieve intensa o riesgo real para los participantes. Se avisa con anticipación y se reprograma sin costo.",
-  },
-  {
-    pregunta: "¿Cómo reservo?",
-    respuesta:
-      "Podés reservar por WhatsApp o Instagram. Te confirmamos disponibilidad y te enviamos todos los detalles de la excursión.",
-  },
-  {
-    pregunta: "¿Qué formas de pago aceptan?",
-    respuesta:
-      "Aceptamos efectivo, transferencia bancaria y tarjeta de crédito/débito.",
-  },
-];
+const faqKeys = ["faq_1", "faq_2", "faq_3", "faq_4", "faq_5", "faq_6"] as const;
 
-export default function FAQ() {
+export default function FAQ({ locale }: { locale: Locale }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const { lang } = useLang();
   const tr = t[lang];
 
+  const faqs = faqKeys.map((key) => ({
+    pregunta: tr[`${key}_q` as keyof typeof tr],
+    respuesta: tr[`${key}_a` as keyof typeof tr],
+  }));
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.pregunta,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.respuesta,
+      },
+    })),
+  };
+
   return (
     <section id="faq" className="px-5 py-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="mx-auto max-w-2xl">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -79,9 +71,9 @@ export default function FAQ() {
                   className="flex w-full items-center justify-between px-5 py-4 text-left"
                   aria-expanded={isOpen}
                 >
-                  <span className="pr-4 text-sm font-bold md:text-base" style={{ color: "#1a1a1a" }}>
+                  <h3 className="pr-4 text-sm font-bold md:text-base" style={{ color: "#1a1a1a" }}>
                     {faq.pregunta}
-                  </span>
+                  </h3>
                   <motion.span
                     animate={{ rotate: isOpen ? 180 : 0 }}
                     transition={{ duration: 0.25 }}

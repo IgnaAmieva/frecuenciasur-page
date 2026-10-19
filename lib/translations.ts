@@ -22,11 +22,11 @@ export const t = {
     ventajas_seguridad_desc: "Equipo de primeros auxilios y seguros",
     nosotros_titulo: "¿Quiénes somos?",
     nosotros_p1:
-      "En Frecuencia Sur creemos que conocer Ushuaia significa mucho más que visitar un destino. Nuestra misión es acercar a cada visitante a la naturaleza del Fin del Mundo mediante experiencias auténticas, seguras y personalizadas.",
+      "En Frecuencia Sur creemos que conocer Ushuaia significa mucho más que visitar un destino: es vivir una experiencia auténtica en la naturaleza del Fin del Mundo. Somos una agencia especializada en turismo alternativo, trekking y experiencias de montaña en Ushuaia y Tierra del Fuego.",
     nosotros_p2:
-      "Somos apasionados por la montaña y buscamos que cada excursión combine aventura, aprendizaje y conexión con uno de los paisajes más increíbles del planeta.",
+      "Nos apasiona la montaña y buscamos que cada excursión combine aventura, aprendizaje y conexión con los increíbles paisajes de la Patagonia. Diseñamos experiencias para descubrir senderos, montañas y rincones únicos, acompañando a cada visitante en una forma diferente de explorar el entorno natural.",
     nosotros_p3:
-      "Trabajamos con grupos reducidos para brindar una experiencia de mayor calidad, priorizando siempre la seguridad y el trato personalizado.",
+      "Trabajamos con grupos reducidos para ofrecer excursiones personalizadas, priorizando la seguridad, la calidad del servicio y el acompañamiento de nuestros guías. En Frecuencia Sur, te invitamos a descubrir el turismo aventura en Ushuaia y vivir el Fin del Mundo desde una perspectiva auténtica, cercana y natural.",
     excursiones_titulo: "Nuestras Excursiones",
     excursiones_ver_mas: "Ver más →",
     incluye_titulo: "Todas las excursiones incluyen",
@@ -49,6 +49,40 @@ export const t = {
     contacto_titulo: "Contactanos",
     faq_titulo: "Preguntas frecuentes",
     footer_derechos: "Todos los derechos reservados",
+    reservar: "RESERVAR",
+    volver_excursiones: "Volver a excursiones",
+    info_recorrido: "Información del Recorrido",
+    info_recorrido_sub: "Todo lo que necesitás saber antes de tu aventura",
+    que_incluye: "Qué incluye",
+    galeria: "Galería",
+    dificultad: "Dificultad",
+    distancia: "Distancia",
+    duracion: "Duración",
+    desnivel: "Desnivel",
+    pick_up: "Pick Up",
+    clima: "Clima",
+    equipamiento: "Equipamiento",
+    info_adicional: "Info Adicional",
+    wa_reserva_pre: "Hola! Quiero reservar la excursión",
+    wa_reserva_post: "¿Qué fechas tienen disponibles?",
+    faq_1_q: "¿Necesito experiencia previa?",
+    faq_1_a:
+      "No para las excursiones de dificultad Media. Solo necesitás condición física básica y ganas de caminar. Para las de dificultad Media / Alta y Alta recomendamos experiencia previa en trekking.",
+    faq_2_q: "¿Las excursiones incluyen traslado?",
+    faq_2_a:
+      "Sí, todas nuestras excursiones incluyen traslado ida y vuelta. Te buscamos y te dejamos en tu alojamiento en Ushuaia.",
+    faq_3_q: "¿Qué pasa si llueve?",
+    faq_3_a:
+      "En Ushuaia la lluvia es parte de la experiencia. Salimos con lluvia leve. En caso de condiciones climáticas extremas, se reprograma la salida sin costo adicional.",
+    faq_4_q: "¿Se suspenden por mal clima?",
+    faq_4_a:
+      "Solo en caso de viento fuerte, nieve intensa o riesgo real para los participantes. Se avisa con anticipación y se reprograma sin costo.",
+    faq_5_q: "¿Cómo reservo?",
+    faq_5_a:
+      "Podés reservar por WhatsApp o Instagram. Te confirmamos disponibilidad y te enviamos todos los detalles de la excursión.",
+    faq_6_q: "¿Qué formas de pago aceptan?",
+    faq_6_a:
+      "Aceptamos efectivo, transferencia bancaria y tarjeta de crédito/débito.",
   },
   en: {
     nav_nosotros: "About Us",
@@ -73,11 +107,11 @@ export const t = {
     ventajas_seguridad_desc: "First aid equipment and insurance",
     nosotros_titulo: "Who are we?",
     nosotros_p1:
-      "At Frecuencia Sur we believe that getting to know Ushuaia means much more than visiting a destination. Our mission is to bring every visitor closer to the nature of the End of the World through authentic, safe, and personalized experiences.",
+      "At Frecuencia Sur we believe that getting to know Ushuaia means much more than visiting a destination: it is living an authentic experience in the nature of the End of the World. We are an agency specialized in alternative tourism, trekking and mountain experiences in Ushuaia and Tierra del Fuego.",
     nosotros_p2:
-      "We are passionate about the mountains and we strive to make every excursion combine adventure, learning, and connection with one of the most incredible landscapes on the planet.",
+      "We are passionate about the mountains and we seek for every excursion to combine adventure, learning and connection with the incredible landscapes of Patagonia. We design experiences to discover trails, mountains and unique corners, accompanying each visitor in a different way of exploring the natural environment.",
     nosotros_p3:
-      "We work with small groups to provide a higher quality experience, always prioritizing safety and personalized service.",
+      "We work with small groups to offer personalized excursions, prioritizing safety, service quality and the support of our guides. At Frecuencia Sur, we invite you to discover adventure tourism in Ushuaia and experience the End of the World from an authentic, close and natural perspective.",
     excursiones_titulo: "Our Excursions",
     excursiones_ver_mas: "See more →",
     incluye_titulo: "All excursions include",
@@ -100,6 +134,40 @@ export const t = {
     contacto_titulo: "Contact us",
     faq_titulo: "Frequently asked questions",
     footer_derechos: "All rights reserved",
+    reservar: "BOOK NOW",
+    volver_excursiones: "Back to excursions",
+    info_recorrido: "Trail Information",
+    info_recorrido_sub: "Everything you need to know before your adventure",
+    que_incluye: "What's included",
+    galeria: "Gallery",
+    dificultad: "Difficulty",
+    distancia: "Distance",
+    duracion: "Duration",
+    desnivel: "Elevation gain",
+    pick_up: "Pick Up",
+    clima: "Weather",
+    equipamiento: "Equipment",
+    info_adicional: "Additional Info",
+    wa_reserva_pre: "Hi! I'd like to book the",
+    wa_reserva_post: "tour. What dates do you have available?",
+    faq_1_q: "Do I need previous experience?",
+    faq_1_a:
+      "Not for Medium difficulty excursions. You only need basic physical fitness and a desire to walk. For Medium / High and High difficulty excursions we recommend previous trekking experience.",
+    faq_2_q: "Do excursions include transfers?",
+    faq_2_a:
+      "Yes, all our excursions include round-trip transfers. We pick you up and drop you off at your accommodation in Ushuaia.",
+    faq_3_q: "What happens if it rains?",
+    faq_3_a:
+      "In Ushuaia, rain is part of the experience. We go out in light rain. In case of extreme weather conditions, the outing is rescheduled at no additional cost.",
+    faq_4_q: "Are they cancelled for bad weather?",
+    faq_4_a:
+      "Only in case of strong winds, heavy snow or real risk to participants. You are notified in advance and it is rescheduled at no cost.",
+    faq_5_q: "How do I book?",
+    faq_5_a:
+      "You can book via WhatsApp or Instagram. We confirm availability and send you all the details of the excursion.",
+    faq_6_q: "What payment methods do you accept?",
+    faq_6_a:
+      "We accept cash, bank transfer and credit/debit card.",
   },
   pt: {
     nav_nosotros: "Sobre nós",
@@ -124,11 +192,11 @@ export const t = {
     ventajas_seguridad_desc: "Equipamento de primeiros socorros e seguro",
     nosotros_titulo: "Quem somos?",
     nosotros_p1:
-      "Na Frecuencia Sur acreditamos que conhecer Ushuaia significa muito mais do que visitar um destino. Nossa missão é aproximar cada visitante da natureza do Fim do Mundo através de experiências autênticas, seguras e personalizadas.",
+      "Na Frecuencia Sur acreditamos que conhecer Ushuaia significa muito mais do que visitar um destino: é viver uma experiência autêntica na natureza do Fim do Mundo. Somos uma agência especializada em turismo alternativo, trekking e experiências de montanha em Ushuaia e Terra do Fogo.",
     nosotros_p2:
-      "Somos apaixonados pela montanha e buscamos que cada excursão combine aventura, aprendizado e conexão com uma das paisagens mais incríveis do planeta.",
+      "Somos apaixonados pela montanha e buscamos que cada excursão combine aventura, aprendizado e conexão com as incríveis paisagens da Patagônia. Desenhamos experiências para descobrir trilhas, montanhas e cantos únicos, acompanhando cada visitante em uma forma diferente de explorar o ambiente natural.",
     nosotros_p3:
-      "Trabalhamos com grupos reduzidos para oferecer uma experiência de maior qualidade, priorizando sempre a segurança e o atendimento personalizado.",
+      "Trabalhamos com grupos reduzidos para oferecer excursões personalizadas, priorizando a segurança, a qualidade do serviço e o acompanhamento dos nossos guias. Na Frecuencia Sur, convidamos você a descobrir o turismo de aventura em Ushuaia e viver o Fim do Mundo a partir de uma perspectiva autêntica, próxima e natural.",
     excursiones_titulo: "Nossas Excursões",
     excursiones_ver_mas: "Ver mais →",
     incluye_titulo: "Todas as excursões incluem",
@@ -151,6 +219,40 @@ export const t = {
     contacto_titulo: "Fale conosco",
     faq_titulo: "Perguntas frequentes",
     footer_derechos: "Todos os direitos reservados",
+    reservar: "RESERVAR AGORA",
+    volver_excursiones: "Voltar às excursões",
+    info_recorrido: "Informação do Percurso",
+    info_recorrido_sub: "Tudo o que você precisa saber antes da sua aventura",
+    que_incluye: "O que inclui",
+    galeria: "Galeria",
+    dificultad: "Dificuldade",
+    distancia: "Distância",
+    duracion: "Duração",
+    desnivel: "Desnível",
+    pick_up: "Pick Up",
+    clima: "Clima",
+    equipamiento: "Equipamento",
+    info_adicional: "Info Adicional",
+    wa_reserva_pre: "Olá! Quero reservar a excursão",
+    wa_reserva_post: "Quais datas vocês têm disponíveis?",
+    faq_1_q: "Preciso de experiência prévia?",
+    faq_1_a:
+      "Não para as excursões de dificuldade Média. Você só precisa de condição física básica e vontade de caminhar. Para as de dificuldade Média / Alta e Alta recomendamos experiência prévia em trekking.",
+    faq_2_q: "As excursões incluem traslado?",
+    faq_2_a:
+      "Sim, todas as nossas excursões incluem traslado de ida e volta. Buscamos e deixamos no seu alojamento em Ushuaia.",
+    faq_3_q: "O que acontece se chover?",
+    faq_3_a:
+      "Em Ushuaia a chuva é parte da experiência. Saímos com chuva leve. Em caso de condições climáticas extremas, a saída é remarcada sem custo adicional.",
+    faq_4_q: "São canceladas por mau tempo?",
+    faq_4_a:
+      "Apenas em caso de vento forte, neve intensa ou risco real para os participantes. Avisamos com antecedência e remarcamos sem custo.",
+    faq_5_q: "Como faço para reservar?",
+    faq_5_a:
+      "Você pode reservar pelo WhatsApp ou Instagram. Confirmamos disponibilidade e enviamos todos os detalhes da excursão.",
+    faq_6_q: "Quais formas de pagamento aceitam?",
+    faq_6_a:
+      "Aceitamos dinheiro, transferência bancária e cartão de crédito/débito.",
   },
 } as const;
 
