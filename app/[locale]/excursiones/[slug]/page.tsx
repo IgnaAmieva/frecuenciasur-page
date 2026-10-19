@@ -12,6 +12,31 @@ import ExcursionGallery from "@/components/ExcursionGallery";
 import ExcursionBookButton from "@/components/ExcursionBookButton";
 import ExcursionMobileBar from "@/components/ExcursionMobileBar";
 import ExcursionBackLink from "@/components/ExcursionBackLink";
+import {
+  UserCheck,
+  Car,
+  UtensilsCrossed,
+  Shield,
+  Coffee,
+  ShoppingBag,
+  Wrench,
+  Mountain,
+  Footprints,
+  type LucideIcon,
+} from "lucide-react";
+
+const INCLUYE_ICONS: Record<string, LucideIcon> = {
+  guia: UserCheck,
+  traslado: Car,
+  boxLunch: UtensilsCrossed,
+  seguro: Shield,
+  almuerzo: Coffee,
+  vianda: ShoppingBag,
+  equipo: Wrench,
+  pistenBully: Mountain,
+  miniTrekking: Footprints,
+  cena: UtensilsCrossed,
+};
 
 export function generateStaticParams() {
   const params: { locale: string; slug: string }[] = [];
@@ -248,13 +273,17 @@ export default async function ExcursionPage({
                     : "Qué incluye"}
               </h2>
               <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-                {exc.incluye[locale].map((item) => (
-                  <div key={item} className="flex flex-col items-center gap-2">
-                    <span className="text-sm" style={{ color: "#374151" }}>
-                      {item}
-                    </span>
-                  </div>
-                ))}
+                {exc.incluye.map((item) => {
+                  const Icon = INCLUYE_ICONS[item.key];
+                  return (
+                    <div key={item.key} className="flex flex-col items-center gap-2">
+                      {Icon && <Icon className="h-6 w-6 text-brand-orange" />}
+                      <span className="text-sm" style={{ color: "#374151" }}>
+                        {item.label[locale]}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </section>

@@ -1,5 +1,10 @@
 import type { Locale } from "@/lib/i18n";
 
+export interface IncluyeItem {
+  key: string;
+  label: Record<Locale, string>;
+}
+
 export interface Excursion {
   slug: string;
   nombre: Record<Locale, string>;
@@ -9,7 +14,7 @@ export interface Excursion {
   distancia: Record<Locale, string>;
   desnivel: Record<Locale, string>;
   duracion: Record<Locale, string>;
-  incluye: Record<Locale, string[]>;
+  incluye: IncluyeItem[];
   imagenHero: string;
   imagenes: string[];
   pickUp: Record<Locale, string>;
@@ -42,11 +47,12 @@ export const excursiones: Excursion[] = [
     distancia: { es: "10 km", en: "10 km", pt: "10 km" },
     desnivel: { es: "200–300 m", en: "200–300 m", pt: "200–300 m" },
     duracion: { es: "5 horas", en: "5 hours", pt: "5 horas" },
-    incluye: {
-      es: ["Guía profesional", "Traslado ida y vuelta", "Box Lunch", "Seguro"],
-      en: ["Professional guide", "Round-trip transfer", "Box Lunch", "Insurance"],
-      pt: ["Guia profissional", "Traslado ida e volta", "Box Lunch", "Seguro"],
-    },
+    incluye: [
+      { key: "guia", label: { es: "Guía profesional", en: "Professional guide", pt: "Guia profissional" } },
+      { key: "traslado", label: { es: "Traslado ida y vuelta", en: "Round-trip transfer", pt: "Traslado ida e volta" } },
+      { key: "boxLunch", label: { es: "Box Lunch", en: "Box Lunch", pt: "Box Lunch" } },
+      { key: "seguro", label: { es: "Seguro", en: "Insurance", pt: "Seguro" } },
+    ],
     imagenHero: "/images/excursiones/laguna-esmeralda/IMG_7464.JPG",
     imagenes: [
       "/images/excursiones/laguna-esmeralda/IMG_7464.JPG",
@@ -89,11 +95,12 @@ export const excursiones: Excursion[] = [
     distancia: { es: "8 km", en: "8 km", pt: "8 km" },
     desnivel: { es: "400 m", en: "400 m", pt: "400 m" },
     duracion: { es: "5 horas", en: "5 hours", pt: "5 horas" },
-    incluye: {
-      es: ["Guía profesional", "Traslado ida y vuelta", "Box Lunch", "Seguro"],
-      en: ["Professional guide", "Round-trip transfer", "Box Lunch", "Insurance"],
-      pt: ["Guia profissional", "Traslado ida e volta", "Box Lunch", "Seguro"],
-    },
+    incluye: [
+      { key: "guia", label: { es: "Guía profesional", en: "Professional guide", pt: "Guia profissional" } },
+      { key: "traslado", label: { es: "Traslado ida y vuelta", en: "Round-trip transfer", pt: "Traslado ida e volta" } },
+      { key: "boxLunch", label: { es: "Box Lunch", en: "Box Lunch", pt: "Box Lunch" } },
+      { key: "seguro", label: { es: "Seguro", en: "Insurance", pt: "Seguro" } },
+    ],
     imagenHero: "/images/excursiones/glaciar-martial/IMG_0225.jpg",
     imagenes: [
       "/images/excursiones/glaciar-martial/IMG_0225.jpg",
@@ -138,11 +145,12 @@ export const excursiones: Excursion[] = [
     distancia: { es: "15 km", en: "15 km", pt: "15 km" },
     desnivel: { es: "650 m", en: "650 m", pt: "650 m" },
     duracion: { es: "7 horas", en: "7 hours", pt: "7 horas" },
-    incluye: {
-      es: ["Guía profesional", "Traslado ida y vuelta", "Box Lunch", "Seguro"],
-      en: ["Professional guide", "Round-trip transfer", "Box Lunch", "Insurance"],
-      pt: ["Guia profissional", "Traslado ida e volta", "Box Lunch", "Seguro"],
-    },
+    incluye: [
+      { key: "guia", label: { es: "Guía profesional", en: "Professional guide", pt: "Guia profissional" } },
+      { key: "traslado", label: { es: "Traslado ida y vuelta", en: "Round-trip transfer", pt: "Traslado ida e volta" } },
+      { key: "boxLunch", label: { es: "Box Lunch", en: "Box Lunch", pt: "Box Lunch" } },
+      { key: "seguro", label: { es: "Seguro", en: "Insurance", pt: "Seguro" } },
+    ],
     imagenHero: "/images/excursiones/glaciar-vinciguerra/IMG_1464.jpg",
     imagenes: [
       "/images/excursiones/glaciar-vinciguerra/IMG_1464.jpg",
@@ -186,11 +194,12 @@ export const excursiones: Excursion[] = [
     distancia: { es: "20 km", en: "20 km", pt: "20 km" },
     desnivel: { es: "900 m", en: "900 m", pt: "900 m" },
     duracion: { es: "8 horas", en: "8 hours", pt: "8 horas" },
-    incluye: {
-      es: ["Guía profesional", "Traslado ida y vuelta", "Box Lunch", "Seguro"],
-      en: ["Professional guide", "Round-trip transfer", "Box Lunch", "Insurance"],
-      pt: ["Guia profissional", "Traslado ida e volta", "Box Lunch", "Seguro"],
-    },
+    incluye: [
+      { key: "guia", label: { es: "Guía profesional", en: "Professional guide", pt: "Guia profissional" } },
+      { key: "traslado", label: { es: "Traslado ida y vuelta", en: "Round-trip transfer", pt: "Traslado ida e volta" } },
+      { key: "boxLunch", label: { es: "Box Lunch", en: "Box Lunch", pt: "Box Lunch" } },
+      { key: "seguro", label: { es: "Seguro", en: "Insurance", pt: "Seguro" } },
+    ],
     imagenHero: "/images/excursiones/glaciar-ojo-del-albino/DJI_0658.JPG",
     imagenes: [
       "/images/excursiones/glaciar-ojo-del-albino/DJI_0658.JPG",
@@ -237,32 +246,14 @@ export const excursiones: Excursion[] = [
     distancia: { es: "13 km ida y vuelta", en: "13 km round trip", pt: "13 km ida e volta" },
     desnivel: { es: "800 m", en: "800 m", pt: "800 m" },
     duracion: { es: "8 horas", en: "8 hours", pt: "8 horas" },
-    incluye: {
-      es: [
-        "Guía de Montaña",
-        "Almuerzo e infusión caliente",
-        "Vianda de marcha",
-        "Equipo técnico: bastones, grampines, etc.",
-        "Traslado ida y vuelta al alojamiento",
-        "Seguro de accidentes personales",
-      ],
-      en: [
-        "Mountain Guide",
-        "Lunch and hot beverage",
-        "Trail snack",
-        "Technical equipment: poles, crampons, etc.",
-        "Round-trip transfer to accommodation",
-        "Personal accident insurance",
-      ],
-      pt: [
-        "Guia de Montanha",
-        "Almoço e infusão quente",
-        "Lanche de trilha",
-        "Equipamento técnico: bastões, grampões, etc.",
-        "Traslado ida e volta ao alojamento",
-        "Seguro de acidentes pessoais",
-      ],
-    },
+    incluye: [
+      { key: "guia", label: { es: "Guía de Montaña", en: "Mountain Guide", pt: "Guia de Montanha" } },
+      { key: "almuerzo", label: { es: "Almuerzo e infusión caliente", en: "Lunch and hot beverage", pt: "Almoço e infusão quente" } },
+      { key: "vianda", label: { es: "Vianda de marcha", en: "Trail snack", pt: "Lanche de trilha" } },
+      { key: "equipo", label: { es: "Equipo técnico: bastones, grampines, etc.", en: "Technical equipment: poles, crampons, etc.", pt: "Equipamento técnico: bastões, grampões, etc." } },
+      { key: "traslado", label: { es: "Traslado ida y vuelta al alojamiento", en: "Round-trip transfer to accommodation", pt: "Traslado ida e volta ao alojamento" } },
+      { key: "seguro", label: { es: "Seguro de accidentes personales", en: "Personal accident insurance", pt: "Seguro de acidentes pessoais" } },
+    ],
     imagenHero: "/images/excursiones/laguna-cinco-hermanos/IMG_6270.JPG",
     imagenes: [
       "/images/excursiones/laguna-cinco-hermanos/IMG_5492.jpg",
@@ -308,29 +299,13 @@ export const excursiones: Excursion[] = [
     distancia: { es: "A confirmar", en: "To be confirmed", pt: "A confirmar" },
     desnivel: { es: "A confirmar", en: "To be confirmed", pt: "A confirmar" },
     duracion: { es: "A confirmar", en: "To be confirmed", pt: "A confirmar" },
-    incluye: {
-      es: [
-        "Ascenso en Pisten Bully con cabina de pasajeros",
-        "Mini trekking con guía experto en montaña",
-        "Equipos de montaña: linternas, crampines y bastones",
-        "Cena en refugio de tres pasos con bebida libre",
-        "Seguro de actividad",
-      ],
-      en: [
-        "Pisten Bully ascent with passenger cabin",
-        "Mini trekking with mountain expert guide",
-        "Mountain equipment: flashlights, crampons and poles",
-        "Three-course dinner at refuge with open bar",
-        "Activity insurance",
-      ],
-      pt: [
-        "Subida em Pisten Bully com cabine de passageiros",
-        "Mini trekking com guia especialista em montanha",
-        "Equipamento de montanha: lanternas, grampões e bastões",
-        "Jantar de três pratos no refúgio com bebida livre",
-        "Seguro de atividade",
-      ],
-    },
+    incluye: [
+      { key: "pistenBully", label: { es: "Ascenso en Pisten Bully con cabina de pasajeros", en: "Pisten Bully ascent with passenger cabin", pt: "Subida em Pisten Bully com cabine de passageiros" } },
+      { key: "miniTrekking", label: { es: "Mini trekking con guía experto en montaña", en: "Mini trekking with mountain expert guide", pt: "Mini trekking com guia especialista em montanha" } },
+      { key: "equipo", label: { es: "Equipos de montaña: linternas, crampines y bastones", en: "Mountain equipment: flashlights, crampons and poles", pt: "Equipamento de montanha: lanternas, grampões e bastões" } },
+      { key: "cena", label: { es: "Cena en refugio de tres pasos con bebida libre", en: "Three-course dinner at refuge with open bar", pt: "Jantar de três pratos no refúgio com bebida livre" } },
+      { key: "seguro", label: { es: "Seguro de actividad", en: "Activity insurance", pt: "Seguro de atividade" } },
+    ],
     imagenHero: "/images/excursiones/martial-aventura/8c51fea1-f555-4f23-933a-ebb5c165b340.jpg",
     imagenes: [
       "/images/excursiones/martial-aventura/8c51fea1-f555-4f23-933a-ebb5c165b340.jpg",
@@ -374,26 +349,12 @@ export const excursiones: Excursion[] = [
     distancia: { es: "9 km ida y vuelta", en: "9 km round trip", pt: "9 km ida e volta" },
     desnivel: { es: "500 m", en: "500 m", pt: "500 m" },
     duracion: { es: "5 horas", en: "5 hours", pt: "5 horas" },
-    incluye: {
-      es: [
-        "Guía de Montaña",
-        "Almuerzo e infusión caliente",
-        "Traslado ida y vuelta al alojamiento",
-        "Seguro de accidentes personales",
-      ],
-      en: [
-        "Mountain Guide",
-        "Lunch and hot beverage",
-        "Round-trip transfer to accommodation",
-        "Personal accident insurance",
-      ],
-      pt: [
-        "Guia de Montanha",
-        "Almoço e infusão quente",
-        "Traslado ida e volta ao alojamento",
-        "Seguro de acidentes pessoais",
-      ],
-    },
+    incluye: [
+      { key: "guia", label: { es: "Guía de Montaña", en: "Mountain Guide", pt: "Guia de Montanha" } },
+      { key: "almuerzo", label: { es: "Almuerzo e infusión caliente", en: "Lunch and hot beverage", pt: "Almoço e infusão quente" } },
+      { key: "traslado", label: { es: "Traslado ida y vuelta al alojamiento", en: "Round-trip transfer to accommodation", pt: "Traslado ida e volta ao alojamento" } },
+      { key: "seguro", label: { es: "Seguro de accidentes personales", en: "Personal accident insurance", pt: "Seguro de acidentes pessoais" } },
+    ],
     imagenHero: "/images/excursiones/monte-susana/IMG_5732.JPG",
     imagenes: [
       "/images/excursiones/monte-susana/IMG_5732.JPG",
@@ -446,11 +407,12 @@ export const excursiones: Excursion[] = [
     distancia: { es: "Consultar", en: "Ask us", pt: "Consultar" },
     desnivel: { es: "Consultar", en: "Ask us", pt: "Consultar" },
     duracion: { es: "Consultar", en: "Ask us", pt: "Consultar" },
-    incluye: {
-      es: ["Guía profesional", "Traslado ida y vuelta", "Box Lunch", "Seguro"],
-      en: ["Professional guide", "Round-trip transfer", "Box Lunch", "Insurance"],
-      pt: ["Guia profissional", "Traslado ida e volta", "Box Lunch", "Seguro"],
-    },
+    incluye: [
+      { key: "guia", label: { es: "Guía profesional", en: "Professional guide", pt: "Guia profissional" } },
+      { key: "traslado", label: { es: "Traslado ida y vuelta", en: "Round-trip transfer", pt: "Traslado ida e volta" } },
+      { key: "boxLunch", label: { es: "Box Lunch", en: "Box Lunch", pt: "Box Lunch" } },
+      { key: "seguro", label: { es: "Seguro", en: "Insurance", pt: "Seguro" } },
+    ],
     imagenHero: "/images/excursiones/esqui-de-travesia/WhatsApp Image 2026-07-20 at 14.54.18.jpeg",
     imagenes: [
       "/images/excursiones/esqui-de-travesia/WhatsApp Image 2026-07-20 at 14.52.58.jpeg",

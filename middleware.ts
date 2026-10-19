@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_LOCALES = ["en", "pt"];
+const NON_DEFAULT_LOCALES = ["en", "pt"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -17,14 +17,22 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // If path starts with /en or /pt, it's already locale-prefixed — let App Router handle it
-  for (const locale of PUBLIC_LOCALES) {
+  // /es and /es/... → 301 redirect to strip the prefix (Spanish lives at root)
+  if (pathname === "/es" || pathname.startsWith("/es/")) {
+    const stripped = pathname.replace(/^\/es/, "") || "/";
+    const url = request.nextUrl.clone();
+    url.pathname = stripped;
+    return NextResponse.redirect(url, 301);
+  }
+
+  // /en or /pt prefixed paths → let App Router handle via [locale] segment
+  for (const locale of NON_DEFAULT_LOCALES) {
     if (pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)) {
       return NextResponse.next();
     }
   }
 
-  // All other paths: rewrite internally to /es/... so the [locale] segment resolves
+  // All other paths (Spanish, unprefixed): rewrite internally to /es/...
   const url = request.nextUrl.clone();
   url.pathname = `/es${pathname}`;
   return NextResponse.rewrite(url);
