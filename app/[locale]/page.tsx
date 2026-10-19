@@ -29,7 +29,7 @@ export async function generateMetadata({
   const seo = homeSeo[locale];
 
   return {
-    title: seo.title,
+    title: { absolute: seo.title },
     description: seo.description,
     keywords: seo.keywords,
     alternates: {
