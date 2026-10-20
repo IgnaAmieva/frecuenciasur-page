@@ -35,12 +35,14 @@ interface Props {
   items: InfoItem[];
   equipamiento: string;
   infoAdicional: string;
+  locale?: string;
 }
 
 export default function ExcursionInfoGrid({
   items,
   equipamiento,
   infoAdicional,
+  locale,
 }: Props) {
   const [openPanel, setOpenPanel] = useState<string | null>(null);
 
@@ -73,7 +75,9 @@ export default function ExcursionInfoGrid({
           >
             <Backpack className="h-8 w-8 text-white" />
           </button>
-          <p className="text-sm font-bold text-brand-text">Equipamiento</p>
+          <p className="text-sm font-bold text-brand-text">
+            {locale === "en" ? "Equipment" : locale === "pt" ? "Equipamento" : "Equipamiento"}
+          </p>
           <ChevronDown
             size={16}
             className={`mt-1 text-brand-text-secondary transition-transform ${
@@ -93,7 +97,9 @@ export default function ExcursionInfoGrid({
           >
             <Info className="h-8 w-8 text-white" />
           </button>
-          <p className="text-sm font-bold text-brand-text">Info Adicional</p>
+          <p className="text-sm font-bold text-brand-text">
+            {locale === "en" ? "Additional Info" : "Info Adicional"}
+          </p>
           <ChevronDown
             size={16}
             className={`mt-1 text-brand-text-secondary transition-transform ${

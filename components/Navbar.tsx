@@ -3,31 +3,57 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/context/LangContext";
 import { t } from "@/lib/translations";
+import { localePath } from "@/lib/locale-utils";
+import type { Locale } from "@/lib/i18n";
 
 const FLAGS: Record<string, string> = {
-  es: "🇦🇷",
-  en: "🇺🇸",
-  pt: "🇧🇷",
+  es: "\u{1F1E6}\u{1F1F7}",
+  en: "\u{1F1FA}\u{1F1F8}",
+  pt: "\u{1F1E7}\u{1F1F7}",
 };
 
-export default function Navbar() {
+export default function Navbar({ locale }: { locale: Locale }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
-  const { lang, setLang } = useLang();
+  const { lang } = useLang();
   const tr = t[lang];
+  const pathname = usePathname();
+
+  const quizLabel: Record<string, string> = {
+    es: "¿Cuál hago?",
+    en: "Which one?",
+    pt: "Qual faço?",
+  };
+  const faqLabel: Record<string, string> = {
+    es: "Preguntas",
+    en: "FAQ",
+    pt: "Perguntas",
+  };
 
   const links = [
-    { href: "#nosotros", label: tr.nav_nosotros },
-    { href: "#excursiones", label: tr.nav_excursiones },
-    { href: "#galeria", label: tr.nav_galeria },
-    { href: "#contacto", label: tr.nav_contacto },
+    { href: `${localePath(locale, "/")}#excursiones`, label: tr.nav_excursiones },
+    { href: `${localePath(locale, "/")}#quiz`, label: quizLabel[lang] },
+    { href: `${localePath(locale, "/")}#nosotros`, label: tr.nav_nosotros },
+    { href: `${localePath(locale, "/")}#faq`, label: faqLabel[lang] },
+    { href: `${localePath(locale, "/")}#contacto`, label: tr.nav_contacto },
   ];
+
+  // Build the equivalent path in the target locale
+  function switchLocalePath(targetLocale: Locale): string {
+    // Remove current locale prefix from pathname
+    let basePath = pathname;
+    if (locale !== "es" && basePath.startsWith(`/${locale}`)) {
+      basePath = basePath.slice(`/${locale}`.length) || "/";
+    }
+    return localePath(targetLocale, basePath === "/" ? "/" : basePath);
+  }
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -53,8 +79,8 @@ export default function Navbar() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-        <Link href="/" className="flex items-center gap-3">
+      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-5" style={{ height: "var(--header-h)" }}>
+        <Link href={localePath(locale, "/")} className="flex items-center gap-3">
           <Image
             src="/images/logo/logo.png"
             alt="Frecuencia Sur Ushuaia"
@@ -103,12 +129,10 @@ export default function Navbar() {
             {langOpen && (
               <div className="absolute right-0 top-full mt-1 overflow-hidden rounded-lg bg-white shadow-lg">
                 {(["es", "en", "pt"] as const).map((l) => (
-                  <button
+                  <Link
                     key={l}
-                    onClick={() => {
-                      setLang(l);
-                      setLangOpen(false);
-                    }}
+                    href={switchLocalePath(l)}
+                    onClick={() => setLangOpen(false)}
                     className={`flex w-full items-center gap-2 px-4 py-2 text-xs font-medium transition-colors hover:bg-gray-50 ${
                       l === lang ? "bg-gray-50" : ""
                     }`}
@@ -116,11 +140,21 @@ export default function Navbar() {
                   >
                     <span>{FLAGS[l]}</span>
                     <span>{l.toUpperCase()}</span>
-                  </button>
+                  </Link>
                 ))}
               </div>
             )}
           </div>
+
+          {/* RESERVAR — always visible */}
+          <a
+            href="https://wa.me/5492901489265?text=Hola%20Frecuencia%20Sur%2C%20quiero%20consultar%20sobre%20una%20excursi%C3%B3n."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden min-h-[44px] items-center justify-center rounded-full bg-brand-orange px-5 text-xs font-bold uppercase tracking-wider text-white transition hover:brightness-110 md:inline-flex"
+          >
+            {tr.reservar}
+          </a>
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
@@ -159,6 +193,17 @@ export default function Navbar() {
                   </a>
                 </li>
               ))}
+              <li className="mt-2">
+                <a
+                  href="https://wa.me/5492901489265?text=Hola%20Frecuencia%20Sur%2C%20quiero%20consultar%20sobre%20una%20excursi%C3%B3n."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-full bg-brand-orange py-3 text-center text-sm font-bold uppercase tracking-wider text-white transition hover:brightness-110"
+                >
+                  {tr.reservar}
+                </a>
+              </li>
             </ul>
           </motion.div>
         )}

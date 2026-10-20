@@ -10,7 +10,7 @@ export default function Nosotros() {
   const tr = t[lang];
 
   return (
-    <section id="nosotros" className="px-5 py-20">
+    <section id="nosotros" className="px-5 pt-16 md:pt-24">
       <div className="mx-auto max-w-2xl text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

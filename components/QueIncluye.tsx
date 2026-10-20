@@ -23,7 +23,7 @@ export default function QueIncluye() {
   ];
 
   return (
-    <section id="incluye" className="px-5 py-20">
+    <section id="incluye" className="px-5 pt-16 md:pt-24">
       <div className="mx-auto max-w-4xl">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}

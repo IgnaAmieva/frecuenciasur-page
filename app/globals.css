@@ -6,8 +6,17 @@
   --color-brand-orange-mid: #f48c06;
   --color-brand-orange-light: #fde8d8;
   --color-brand-text: #1a1a1a;
-  --color-brand-text-secondary: #555555;
+  --color-brand-text-secondary: #3d3d3d;
   --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+:root {
+  --header-h: 60px;
+}
+@media (min-width: 768px) {
+  :root {
+    --header-h: 72px;
+  }
 }
 
 html {
@@ -19,8 +28,63 @@ body {
   background: #ffffff !important;
   background-color: #ffffff !important;
   color: #1a1a1a !important;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 18px;
+  }
 }
 
 section[id] {
-  scroll-margin-top: 72px;
+  scroll-margin-top: var(--header-h);
+}
+
+.map-sticky {
+  top: var(--header-h);
+  height: 250px;
+}
+@media (min-width: 900px) {
+  .map-sticky {
+    top: calc(var(--header-h) + 16px);
+    height: calc(100svh - var(--header-h) - 32px);
+  }
+}
+
+@keyframes drip {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  50% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  51% {
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+
+.animate-drip {
+  animation: drip 1.8s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -49,7 +49,7 @@ export default function Galeria() {
   };
 
   return (
-    <section id="galeria" className="px-5 py-20">
+    <section id="galeria" className="px-5 pt-16 md:pt-24">
       <div className="mx-auto max-w-3xl">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
