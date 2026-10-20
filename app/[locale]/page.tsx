@@ -1,16 +1,22 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+// TrustBar removed — trust line now lives inside Hero
+import ExcursionesMap from "@/components/ExcursionesMap";
+import Quiz from "@/components/Quiz";
 import Ventajas from "@/components/Ventajas";
-import Excursiones from "@/components/Excursiones";
-import Nosotros from "@/components/Nosotros";
-import Contacto from "@/components/Contacto";
+import Reviews from "@/components/Reviews";
 import QueIncluye from "@/components/QueIncluye";
-import QueLlevar from "@/components/QueLlevar";
-import Galeria from "@/components/Galeria";
+import Mochila from "@/components/Mochila";
+import Nosotros from "@/components/Nosotros";
 import FAQ from "@/components/FAQ";
+import Galeria from "@/components/Galeria";
+import Summit from "@/components/Summit";
+import Contacto from "@/components/Contacto";
 import Footer from "@/components/Footer";
 import JsonLdTravelAgency from "@/components/JsonLdTravelAgency";
+import Altimeter from "@/components/Altimeter";
+import SmoothScroll from "@/components/SmoothScroll";
 import { locales, type Locale } from "@/lib/i18n";
 import { homeSeo, metadataBase } from "@/lib/seo";
 
@@ -69,15 +75,11 @@ export default async function Home({
   return (
     <>
       <JsonLdTravelAgency />
+      <SmoothScroll />
+      <Altimeter />
       <Navbar locale={locale} />
       <Hero locale={locale} />
-      <div
-        className="relative"
-        style={{
-          background:
-            "linear-gradient(to bottom, #FFFFFF 0%, #FFFFFF 45%, #e85d04 100%)",
-        }}
-      >
+      <div className="relative z-[5] bg-white">
         {/* Subtle noise texture overlay */}
         <div
           className="pointer-events-none absolute inset-0"
@@ -88,17 +90,34 @@ export default async function Home({
           }}
         />
         <div className="relative">
-          <Excursiones locale={locale} />
-          <Ventajas />
-          <Nosotros />
-          <FAQ locale={locale} />
-          <QueLlevar />
-          <QueIncluye />
+          <div data-alt="Bosque de lenga">
+            <ExcursionesMap locale={locale} />
+          </div>
+          <div data-alt="Turbal">
+            <Quiz />
+          </div>
+          <div data-alt="Valle glaciar">
+            <Ventajas />
+          </div>
+          <Reviews />
+          <div data-alt="Refugio">
+            <div className="flex flex-col md:flex-row md:gap-8 max-w-6xl mx-auto px-5">
+              <div className="md:flex-1"><QueIncluye /></div>
+              <div className="md:flex-1"><Mochila /></div>
+            </div>
+          </div>
+          <div data-alt="Laguna">
+            <Nosotros />
+            <FAQ locale={locale} />
+          </div>
           <Galeria />
-          <Contacto locale={locale} />
         </div>
       </div>
-      <Footer locale={locale} />
+      <div className="relative z-[5]">
+        <Summit />
+        <Contacto locale={locale} />
+        <Footer locale={locale} />
+      </div>
     </>
   );
 }

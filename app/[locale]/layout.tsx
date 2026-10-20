@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter } from "next/font/google";
 import "../globals.css";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
+import MobileCTA from "@/components/MobileCTA";
 import { LangProvider } from "@/context/LangContext";
 import { locales, type Locale } from "@/lib/i18n";
 import { homeSeo, metadataBase } from "@/lib/seo";
@@ -10,14 +10,6 @@ const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
   variable: "--font-inter",
-  display: "swap",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["900"],
-  style: ["italic"],
-  variable: "--font-playfair",
   display: "swap",
 });
 
@@ -93,12 +85,12 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${inter.variable} ${playfair.variable}`}
+      className={inter.variable}
     >
       <body style={{ color: "#1a1a1a" }} className="font-sans text-brand-text">
         <LangProvider locale={locale as "es" | "en" | "pt"}>
           {children}
-          <WhatsAppFloat />
+          <MobileCTA />
         </LangProvider>
       </body>
     </html>

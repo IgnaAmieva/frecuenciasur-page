@@ -26,11 +26,22 @@ export default function Navbar({ locale }: { locale: Locale }) {
   const tr = t[lang];
   const pathname = usePathname();
 
+  const quizLabel: Record<string, string> = {
+    es: "¿Cuál hago?",
+    en: "Which one?",
+    pt: "Qual faço?",
+  };
+  const faqLabel: Record<string, string> = {
+    es: "Preguntas",
+    en: "FAQ",
+    pt: "Perguntas",
+  };
+
   const links = [
     { href: `${localePath(locale, "/")}#excursiones`, label: tr.nav_excursiones },
-    { href: `${localePath(locale, "/")}#ventajas`, label: tr.ventajas_titulo },
+    { href: `${localePath(locale, "/")}#quiz`, label: quizLabel[lang] },
     { href: `${localePath(locale, "/")}#nosotros`, label: tr.nav_nosotros },
-    { href: `${localePath(locale, "/")}#galeria`, label: tr.nav_galeria },
+    { href: `${localePath(locale, "/")}#faq`, label: faqLabel[lang] },
     { href: `${localePath(locale, "/")}#contacto`, label: tr.nav_contacto },
   ];
 
@@ -68,7 +79,7 @@ export default function Navbar({ locale }: { locale: Locale }) {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
+      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-5" style={{ height: "var(--header-h)" }}>
         <Link href={localePath(locale, "/")} className="flex items-center gap-3">
           <Image
             src="/images/logo/logo.png"
@@ -135,6 +146,16 @@ export default function Navbar({ locale }: { locale: Locale }) {
             )}
           </div>
 
+          {/* RESERVAR — always visible */}
+          <a
+            href="https://wa.me/5492901489265?text=Hola%20Frecuencia%20Sur%2C%20quiero%20consultar%20sobre%20una%20excursi%C3%B3n."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden min-h-[44px] items-center justify-center rounded-full bg-brand-orange px-5 text-xs font-bold uppercase tracking-wider text-white transition hover:brightness-110 md:inline-flex"
+          >
+            {tr.reservar}
+          </a>
+
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             style={{ color: scrolled ? "#1f2937" : "white" }}
@@ -172,6 +193,17 @@ export default function Navbar({ locale }: { locale: Locale }) {
                   </a>
                 </li>
               ))}
+              <li className="mt-2">
+                <a
+                  href="https://wa.me/5492901489265?text=Hola%20Frecuencia%20Sur%2C%20quiero%20consultar%20sobre%20una%20excursi%C3%B3n."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-full bg-brand-orange py-3 text-center text-sm font-bold uppercase tracking-wider text-white transition hover:brightness-110"
+                >
+                  {tr.reservar}
+                </a>
+              </li>
             </ul>
           </motion.div>
         )}

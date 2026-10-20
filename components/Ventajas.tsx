@@ -32,7 +32,7 @@ export default function Ventajas() {
   ];
 
   return (
-    <section id="ventajas" className="px-5 py-20">
+    <section id="ventajas" className="px-5 pt-0">
       <div className="mx-auto max-w-4xl">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}

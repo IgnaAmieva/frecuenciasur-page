@@ -16,7 +16,7 @@ export const homeSeo: Record<Locale, {
       "Descubrí Ushuaia con Frecuencia Sur. Excursiones de trekking y turismo aventura con guías profesionales, grupos reducidos y paisajes únicos.",
     keywords:
       "trekking en Ushuaia, turismo aventura Ushuaia, excursiones en Ushuaia, trekking guiado Ushuaia, excursiones de montaña Ushuaia, senderismo en Ushuaia, experiencias de aventura en Ushuaia, trekking en Tierra del Fuego",
-    h1: "Trekking y Turismo Aventura en Ushuaia | Frecuencia Sur",
+    h1: "Trekking y Turismo Aventura en Ushuaia",
   },
   en: {
     title: "Frecuencia Sur - Alternative Adventure Tourism",
@@ -24,7 +24,7 @@ export const homeSeo: Record<Locale, {
       "Discover Ushuaia with Frecuencia Sur. Trekking and adventure tourism excursions with professional guides, small groups and unique landscapes.",
     keywords:
       "trekking in Ushuaia, adventure tourism Ushuaia, excursions in Ushuaia, guided trekking Ushuaia, mountain excursions Ushuaia, hiking in Ushuaia, adventure experiences in Ushuaia, trekking in Tierra del Fuego",
-    h1: "Trekking and Adventure Tourism in Ushuaia | Frecuencia Sur",
+    h1: "Trekking and Adventure Tourism in Ushuaia",
   },
   pt: {
     title: "Frecuencia Sur - Turismo de aventura alternativo",
@@ -32,7 +32,7 @@ export const homeSeo: Record<Locale, {
       "Descubra Ushuaia com a Frecuencia Sur. Excursões de trekking e turismo de aventura com guias profissionais, grupos reduzidos e paisagens únicas.",
     keywords:
       "trekking em Ushuaia, turismo de aventura Ushuaia, excursões em Ushuaia, trekking guiado Ushuaia, excursões de montanha Ushuaia, caminhada em Ushuaia, experiências de aventura em Ushuaia, trekking na Terra do Fogo",
-    h1: "Trekking e Turismo de Aventura em Ushuaia | Frecuencia Sur",
+    h1: "Trekking e Turismo de Aventura em Ushuaia",
   },
 };
 

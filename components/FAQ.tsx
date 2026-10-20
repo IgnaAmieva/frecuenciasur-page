@@ -33,7 +33,7 @@ export default function FAQ({ locale }: { locale: Locale }) {
   };
 
   return (
-    <section id="faq" className="px-5 py-20">
+    <section id="faq" className="px-5 pt-16 md:pt-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}

@@ -7,6 +7,7 @@ import { localePath } from "@/lib/locale-utils";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ExcursionInfoGrid from "@/components/ExcursionInfoGrid";
+import ElevationProfile from "@/components/ElevationProfile";
 import ExcursionHeroCarousel from "@/components/ExcursionHeroCarousel";
 import ExcursionGallery from "@/components/ExcursionGallery";
 import ExcursionBookButton from "@/components/ExcursionBookButton";
@@ -168,19 +169,13 @@ export default async function ExcursionPage({
         />
       </div>
 
-      {/* Content with gradient */}
-      <div
-        className="relative"
-        style={{
-          background:
-            "linear-gradient(to bottom, #FFFFFF 0%, #FFFFFF 45%, #e85d04 100%)",
-        }}
-      >
+      {/* Content — white background */}
+      <div className="relative bg-white">
         <div className="relative">
           {/* Info del recorrido */}
           <section className="px-5 py-16">
             <div className="mx-auto max-w-4xl">
-              <h2 className="mb-2 text-center text-2xl font-extrabold text-brand-text md:text-3xl">
+              <h2 className="mb-2 text-center text-2xl font-extrabold md:text-3xl" style={{ color: "#111" }}>
                 {locale === "en"
                   ? "Trail Information"
                   : locale === "pt"
@@ -235,6 +230,9 @@ export default async function ExcursionPage({
             </div>
           </section>
 
+          {/* Elevation Profile */}
+          <ElevationProfile slug={slug} locale={locale} />
+
           {/* Book button — position 2: after info grid */}
           <div className="flex justify-center px-5 pb-8">
             <ExcursionBookButton
@@ -249,11 +247,12 @@ export default async function ExcursionPage({
           <section className="px-5 py-16">
             <div className="mx-auto max-w-2xl">
               <ExcursionBackLink locale={locale} />
-              <div className="space-y-4">
+              <div className="space-y-4" style={{ maxWidth: "65ch" }}>
                 {descriptionParagraphs.map((p, i) => (
                   <p
                     key={i}
-                    className="text-base leading-relaxed text-brand-text-secondary"
+                    className="text-base leading-relaxed"
+                    style={{ color: "#111" }}
                   >
                     {p}
                   </p>
