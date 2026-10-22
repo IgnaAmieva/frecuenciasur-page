@@ -5,13 +5,11 @@ import Hero from "@/components/Hero";
 import ExcursionesMap from "@/components/ExcursionesMap";
 import Quiz from "@/components/Quiz";
 import Ventajas from "@/components/Ventajas";
-import Reviews from "@/components/Reviews";
 import QueIncluye from "@/components/QueIncluye";
 import Mochila from "@/components/Mochila";
 import Nosotros from "@/components/Nosotros";
 import FAQ from "@/components/FAQ";
 import Galeria from "@/components/Galeria";
-import Summit from "@/components/Summit";
 import Contacto from "@/components/Contacto";
 import Footer from "@/components/Footer";
 import JsonLdTravelAgency from "@/components/JsonLdTravelAgency";
@@ -90,31 +88,35 @@ export default async function Home({
           }}
         />
         <div className="relative">
+          {/* 1. Excursiones (map + quiz inside) */}
           <div data-alt="Bosque de lenga">
             <ExcursionesMap locale={locale} />
-          </div>
-          <div data-alt="Turbal">
             <Quiz />
           </div>
-          <div data-alt="Valle glaciar">
+          {/* 2. ¿Por qué elegirnos? */}
+          <div data-alt="Turbal">
             <Ventajas />
           </div>
-          <Reviews />
-          <div data-alt="Refugio">
-            <div className="flex flex-col md:flex-row md:gap-8 max-w-6xl mx-auto px-5">
-              <div className="md:flex-1"><QueIncluye /></div>
-              <div className="md:flex-1"><Mochila /></div>
-            </div>
-          </div>
-          <div data-alt="Laguna">
+          {/* 3. ¿Quiénes somos? */}
+          <div data-alt="Valle glaciar">
             <Nosotros />
+          </div>
+          {/* 4. FAQ */}
+          <div data-alt="Refugio">
             <FAQ locale={locale} />
           </div>
+          {/* 5. ¿Qué llevar? */}
+          <div data-alt="Laguna">
+            <Mochila />
+          </div>
+          {/* 6. Todas las excursiones incluyen */}
+          <QueIncluye />
+          {/* 7. Galería */}
           <Galeria />
         </div>
       </div>
+      {/* 8. Contacto (includes Summit) */}
       <div className="relative z-[5]">
-        <Summit />
         <Contacto locale={locale} />
         <Footer locale={locale} />
       </div>

@@ -127,8 +127,8 @@ export default function Mochila() {
 
   /* ---- Translation helpers ---- */
   const trAny = tr as Record<string, string>;
-  const titulo = trAny.mochila_titulo ?? "Armá tu mochila";
-  const subtitle = trAny.mochila_subtitle ?? "Marcá lo que ya tenés y mandate la lista por WhatsApp.";
+  const titulo = trAny.llevar_titulo ?? "¿Qué llevar?";
+  const subtitle = trAny.mochila_titulo ?? "Armá tu mochila";
   const readyLabel = trAny.mochila_ready ?? "listos";
   const sendLabel = trAny.mochila_send ?? "Mandame la lista";
   const claveLabel = trAny.mochila_clave ?? "clave";

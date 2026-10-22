@@ -44,6 +44,7 @@ export default function Navbar({ locale }: { locale: Locale }) {
     { href: `${localePath(locale, "/")}#faq`, label: faqLabel[lang] },
     { href: `${localePath(locale, "/")}#contacto`, label: tr.nav_contacto },
   ];
+  // Note: Quiz anchor still works — it's inside the Excursiones section now
 
   // Build the equivalent path in the target locale
   function switchLocalePath(targetLocale: Locale): string {
