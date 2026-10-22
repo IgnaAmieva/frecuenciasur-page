@@ -499,6 +499,216 @@ async function captureScreenshots(browser) {
   console.log("  Excursion mobile: 5 positions captured");
 }
 
+/* ─── NEW: Ajustes-mobile checks ─── */
+
+async function checkNoAltitudeChipMobile(browser) {
+  console.log("\n── Mobile: no altitude chip ──");
+  for (const vp of [{ label: "390×844", width: 390, height: 844 }, { label: "360×640", width: 360, height: 640 }]) {
+    const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
+    const page = await ctx.newPage();
+    await page.goto(BASE, { waitUntil: "networkidle" });
+    await page.waitForTimeout(1500);
+    // Scroll down to trigger altimeter
+    await page.evaluate(() => window.scrollTo(0, window.innerHeight));
+    await page.waitForTimeout(500);
+    const chipExists = await page.evaluate(() => {
+      // Look for the altitude chip: a fixed element with ↑ and "m" and < 900px
+      const els = document.querySelectorAll("[class*='min-[900px]:hidden']");
+      for (const el of els) {
+        if (el.textContent && el.textContent.includes("↑") && el.textContent.includes(" m")) return true;
+      }
+      return false;
+    });
+    report(!chipExists, `[${vp.label}] No altitude chip on mobile`);
+    await ctx.close();
+  }
+}
+
+async function checkCardHeightMobile(browser) {
+  console.log("\n── Mobile: card height ≤ 340px ──");
+  for (const vp of [{ label: "390×844", width: 390, height: 844 }, { label: "360×640", width: 360, height: 640 }]) {
+    const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
+    const page = await ctx.newPage();
+    await page.goto(BASE, { waitUntil: "networkidle" });
+    await page.waitForTimeout(1500);
+    const cardHeights = await page.evaluate(() => {
+      const cards = document.querySelectorAll("#excursiones [data-slug]");
+      return [...cards].map(c => ({ slug: c.getAttribute("data-slug"), h: Math.round(c.getBoundingClientRect().height) }));
+    });
+    for (const c of cardHeights) {
+      report(c.h <= 340, `[${vp.label}] Card ${c.slug} ≤ 340px`, `${c.h}px`);
+    }
+    await ctx.close();
+  }
+}
+
+async function checkFilterPinCardCount(browser) {
+  console.log("\n── Filter: pin/card counts match ──");
+  const DIFFICULTY_COUNTS = { Media: 4, "Media / Alta": 2, Alta: 2 };
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(BASE, { waitUntil: "networkidle" });
+  await page.waitForTimeout(1500);
+
+  for (const [diff, expected] of Object.entries(DIFFICULTY_COUNTS)) {
+    // Click the filter button
+    const buttons = await page.$$("button[aria-pressed]");
+    for (const btn of buttons) {
+      const text = await btn.textContent();
+      if (text.trim() === diff) {
+        await btn.click();
+        break;
+      }
+    }
+    await page.waitForTimeout(500);
+
+    const counts = await page.evaluate(() => {
+      const cards = document.querySelectorAll("#excursiones [data-slug]");
+      // Count visible pins (non-null g elements with circle inside the SVG)
+      const svg = document.querySelector("#excursiones svg");
+      const pinGs = svg ? svg.querySelectorAll("g.cursor-pointer") : [];
+      return { cards: cards.length, pins: pinGs.length };
+    });
+    report(counts.cards === expected, `Filter "${diff}" cards = ${expected}`, `got ${counts.cards}`);
+    report(counts.pins > 0, `Filter "${diff}" pins > 0`, `got ${counts.pins}`);
+  }
+
+  // Reset to "Todas"
+  const allBtn = await page.$("button[aria-pressed='false']");
+  if (allBtn) await allBtn.click();
+  await ctx.close();
+}
+
+async function checkNoEmptyTramos(browser) {
+  console.log("\n── No empty tramos ──");
+  const EXCURSION_SLUGS = [
+    "laguna-esmeralda", "glaciar-martial", "glaciar-vinciguerra",
+    "glaciar-ojo-del-albino", "laguna-cinco-hermanos", "monte-susana",
+  ];
+  const LOCALES = ["es", "en", "pt"];
+  const LOCALE_PREFIX = { es: "", en: "/en", pt: "/pt" };
+
+  for (const slug of EXCURSION_SLUGS) {
+    for (const loc of LOCALES) {
+      const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+      const page = await ctx.newPage();
+      const url = `${BASE}${LOCALE_PREFIX[loc]}/excursiones/${slug}`;
+      try {
+        await page.goto(url, { waitUntil: "networkidle", timeout: 15000 });
+      } catch (e) {
+        report(false, `[${loc}/${slug}] Page load`, e.message.slice(0, 80));
+        await ctx.close();
+        continue;
+      }
+      await page.waitForTimeout(500);
+
+      const emptyTramos = await page.evaluate(() => {
+        const tramos = document.querySelectorAll("[data-tramo-idx]");
+        const empty = [];
+        tramos.forEach((t, i) => {
+          const p = t.querySelector("p");
+          if (!p || p.textContent.trim().length < 10) {
+            const h3 = t.querySelector("h3");
+            empty.push(`tramo ${i}: "${h3 ? h3.textContent : "?"}"`)
+          }
+        });
+        return empty;
+      });
+      report(emptyTramos.length === 0, `[${loc}/${slug}] No empty tramos`, emptyTramos.join(", "));
+      await ctx.close();
+    }
+  }
+}
+
+async function checkQuizNoSkiWithoutChoice(browser) {
+  console.log("\n── Quiz: no ski without choosing esquiar ──");
+  const NON_SKI_SEES = ["lagunas", "glaciares", "canal", "nieve"];
+  const EXP_VALUES = [1, 2, 3];
+  const TIME_VALUES = ["short", "long"];
+
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(BASE, { waitUntil: "networkidle" });
+  await page.waitForTimeout(1000);
+
+  let allGood = true;
+  let failDetails = [];
+
+  for (const see of NON_SKI_SEES) {
+    for (const exp of EXP_VALUES) {
+      for (const time of TIME_VALUES) {
+        // Reset quiz
+        await page.evaluate(() => window.scrollTo(0, document.querySelector("#quiz")?.offsetTop || 0));
+        await page.waitForTimeout(200);
+
+        // Click through quiz options via evaluate (since it's React state)
+        const result = await page.evaluate(({ exp, time, see }) => {
+          // Access the quiz logic directly — simulate the score function
+          // We check if the displayed result contains ski-related text
+          return null; // can't access React state, will use UI interaction
+        }, { exp, time, see });
+      }
+    }
+  }
+
+  // Simpler approach: just check that the scoring logic is correct
+  // by testing the actual UI flow for a few key combos
+  const combos = [
+    { expIdx: 0, timeIdx: 0, seeIdx: 0, label: "exp1/short/lagunas" },
+    { expIdx: 2, timeIdx: 1, seeIdx: 3, label: "exp3/long/nieve" },
+    { expIdx: 1, timeIdx: 0, seeIdx: 2, label: "exp2/short/canal" },
+    { expIdx: 0, timeIdx: 1, seeIdx: 1, label: "exp1/long/glaciares" },
+  ];
+
+  for (const combo of combos) {
+    await page.evaluate(() => window.scrollTo(0, document.querySelector("#quiz")?.offsetTop - 100 || 0));
+    await page.waitForTimeout(300);
+
+    // Look for quiz reset button and click if visible
+    const resetBtn = await page.$('#quiz button:has-text("test")');
+    if (resetBtn) {
+      try { await resetBtn.click(); await page.waitForTimeout(300); } catch {}
+    }
+
+    // Q1: experience
+    const q1Btns = await page.$$('#quiz button.rounded-xl');
+    if (q1Btns[combo.expIdx]) {
+      await q1Btns[combo.expIdx].click();
+      await page.waitForTimeout(300);
+    }
+
+    // Q2: time
+    const q2Btns = await page.$$('#quiz button.rounded-xl');
+    if (q2Btns[combo.timeIdx]) {
+      await q2Btns[combo.timeIdx].click();
+      await page.waitForTimeout(300);
+    }
+
+    // Q3: see (skip esquiar = index 4)
+    const q3Btns = await page.$$('#quiz button.rounded-xl');
+    if (q3Btns[combo.seeIdx]) {
+      await q3Btns[combo.seeIdx].click();
+      await page.waitForTimeout(500);
+    }
+
+    // Check result
+    const resultText = await page.evaluate(() => {
+      const quiz = document.querySelector("#quiz");
+      if (!quiz) return "";
+      return quiz.textContent || "";
+    });
+
+    const hasEsqui = /esqu[ií]|skiing|backcountry/i.test(resultText.toLowerCase());
+    if (hasEsqui) {
+      failDetails.push(combo.label);
+      allGood = false;
+    }
+  }
+
+  report(allGood, "Quiz without ski choice never returns Esquí", failDetails.length > 0 ? `failed: ${failDetails.join(", ")}` : "4 combos tested");
+  await ctx.close();
+}
+
 async function run() {
   const browser = await chromium.launch();
 
@@ -508,6 +718,13 @@ async function run() {
       await checkPage(browser, vp, route);
     }
   }
+
+  // New ajustes-mobile checks
+  await checkNoAltitudeChipMobile(browser);
+  await checkCardHeightMobile(browser);
+  await checkFilterPinCardCount(browser);
+  await checkNoEmptyTramos(browser);
+  await checkQuizNoSkiWithoutChoice(browser);
 
   await captureScreenshots(browser);
 

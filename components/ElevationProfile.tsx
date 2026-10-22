@@ -137,9 +137,37 @@ export default function ElevationProfile({ slug, locale }: Props) {
   const [progress, setProgress] = useState(0);
   const [activeTramo, setActiveTramo] = useState(0);
 
-  const descriptions = useMemo(() => {
+  // Distribute description paragraphs across hitos (tramos) evenly.
+  // No tramo should be left without content.
+  const tramoTexts = useMemo(() => {
     if (!data || !seo) return [];
-    return seo.description;
+    const paragraphs = seo.description;
+    const nHitos = data.hitos.length;
+    if (nHitos === 0) return [];
+    if (paragraphs.length === 0) return new Array(nHitos).fill("");
+
+    if (paragraphs.length >= nHitos) {
+      // More paragraphs than hitos: distribute, combining extras into buckets
+      const buckets: string[][] = Array.from({ length: nHitos }, () => []);
+      for (let i = 0; i < paragraphs.length; i++) {
+        const bucketIdx = Math.min(Math.floor((i / paragraphs.length) * nHitos), nHitos - 1);
+        buckets[bucketIdx].push(paragraphs[i]);
+      }
+      return buckets.map((b) => b.join(" "));
+    }
+
+    // Fewer paragraphs than hitos: assign each paragraph to a hito in order,
+    // then remaining hitos share the last paragraph's content via sentence splitting,
+    // or get a portion of the full text.
+    const result: string[] = new Array(nHitos).fill("");
+    // Split all text into sentences, distribute evenly across all hitos
+    const allText = paragraphs.join(" ");
+    const sentences = allText.match(/[^.!?]+[.!?]+\s*/g) || [allText];
+    for (let i = 0; i < sentences.length; i++) {
+      const hitoIdx = Math.min(Math.floor((i / sentences.length) * nHitos), nHitos - 1);
+      result[hitoIdx] = (result[hitoIdx] + sentences[i]).trim();
+    }
+    return result;
   }, [data, seo]);
 
   /* ───── scroll-driven progress via rAF ───── */
@@ -217,14 +245,11 @@ export default function ElevationProfile({ slug, locale }: Props) {
   );
   const waUrl = `https://wa.me/5492901489265?text=${waText}`;
 
-  // Intro = descriptions[0], tramo i = descriptions[i+1]
-  const introText = descriptions[0] ?? "";
-
   return (
     <div ref={containerRef} className="relative">
       {/* ─── Mobile: compact sticky bar ─── */}
       <div
-        className="sticky z-10 bg-white shadow-sm min-[900px]:hidden"
+        className="sticky z-10 min-[900px]:hidden mx-3 rounded-[20px] border border-[#E4E4E4] bg-white shadow-[0_6px_16px_rgba(0,0,0,.08)]"
         style={{ top: "var(--header-h)" }}
       >
         <div className="flex items-center gap-2 px-5 pt-2 pb-1">
@@ -252,20 +277,11 @@ export default function ElevationProfile({ slug, locale }: Props) {
           className="px-5 min-[900px]:px-0 min-[900px]:order-1"
           style={{ paddingBottom: "76px" }}
         >
-          {/* Intro paragraph */}
-          {introText && (
-            <div className="py-6">
-              <p className="text-sm leading-relaxed" style={{ color: "#111" }}>
-                {introText}
-              </p>
-            </div>
-          )}
-
           {hitos.map((h, i) => {
             const isLast = i === hitos.length - 1;
             const prevKm = i === 0 ? 0 : hitos[i - 1].km;
             const isActive = i === activeTramo;
-            const tramoDesc = descriptions[i + 1] ?? "";
+            const tramoDesc = tramoTexts[i] ?? "";
 
             return (
               <div
@@ -275,7 +291,7 @@ export default function ElevationProfile({ slug, locale }: Props) {
                   else tramoElsRef.current.delete(i);
                 }}
                 data-tramo-idx={i}
-                className={`min-[900px]:min-h-[46vh] min-h-[34vh] flex flex-col justify-center ${
+                className={`flex flex-col justify-center py-5 min-[900px]:min-h-[46vh] ${
                   isActive ? "border-l-[3px] border-[#E85D04] pl-4" : "border-l-[3px] border-transparent pl-4"
                 }`}
               >

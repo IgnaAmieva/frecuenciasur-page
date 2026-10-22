@@ -10,7 +10,7 @@ import { t } from "@/lib/translations";
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
-type See = "lagunas" | "glaciares" | "canal" | "nieve";
+type See = "lagunas" | "glaciares" | "canal" | "nieve" | "esquiar";
 type Exp = 1 | 2 | 3;
 type Time = "short" | "long";
 
@@ -30,7 +30,8 @@ const SEE_MAP: Record<See, string[]> = {
   lagunas: ["laguna-esmeralda", "laguna-cinco-hermanos"],
   glaciares: ["glaciar-martial", "glaciar-vinciguerra", "glaciar-ojo-del-albino"],
   canal: ["monte-susana", "glaciar-martial"],
-  nieve: ["esqui-de-travesia", "glaciar-ojo-del-albino"],
+  nieve: ["glaciar-ojo-del-albino", "glaciar-vinciguerra"],
+  esquiar: ["esqui-de-travesia"],
 };
 
 function parseDurationHours(exc: Excursion): number {
@@ -47,8 +48,31 @@ function difficultyLevel(exc: Excursion): "media" | "media-alta" | "alta" {
 }
 
 function score(answers: { exp: Exp; time: Time; see: See }): { best: Excursion; alt: Excursion } {
+  // If user chose "esquiar", Esquí de Travesía is the primary result
+  if (answers.see === "esquiar") {
+    const esqui = excursiones.find((e) => e.slug === "esqui-de-travesia")!;
+    // Alt: best non-ski excursion based on experience/time
+    const others = excursiones.filter((e) => e.slug !== "esqui-de-travesia");
+    others.sort((a, b) => {
+      const order = { media: 1, "media-alta": 2, alta: 3 };
+      const da = order[difficultyLevel(a)];
+      const db = order[difficultyLevel(b)];
+      if (answers.exp === 1) return da - db;
+      if (answers.exp === 3) return db - da;
+      return 0;
+    });
+    if (answers.time === "short") {
+      const short = others.filter((e) => parseDurationHours(e) <= 5);
+      if (short.length > 0) return { best: esqui, alt: short[0] };
+    }
+    return { best: esqui, alt: others[0] ?? excursiones[0] };
+  }
+
+  // For all other choices, exclude Esquí de Travesía
   const candidateSlugs = SEE_MAP[answers.see];
-  let candidates = excursiones.filter((e) => candidateSlugs.includes(e.slug));
+  let candidates = excursiones.filter(
+    (e) => candidateSlugs.includes(e.slug) && e.slug !== "esqui-de-travesia"
+  );
 
   // Time filter: short = <=5h
   if (answers.time === "short") {
@@ -66,11 +90,11 @@ function score(answers: { exp: Exp; time: Time; see: See }): { best: Excursion; 
     return 0; // exp 2: any order
   });
 
-  const best = candidates[0] ?? excursiones[0];
-  // Alt: next candidate or next from full list
+  const best = candidates[0] ?? excursiones.find((e) => e.slug !== "esqui-de-travesia") ?? excursiones[0];
+  // Alt: next candidate or next from full list (excluding ski)
   const alt =
     candidates[1] ??
-    excursiones.find((e) => e.slug !== best.slug) ??
+    excursiones.find((e) => e.slug !== best.slug && e.slug !== "esqui-de-travesia") ??
     excursiones[0];
 
   return { best, alt };
@@ -242,6 +266,11 @@ export default function Quiz() {
                 icon={<Snowflake size={18} />}
                 label={tr.quiz_q3_a4}
                 onClick={() => pick("see", "nieve")}
+              />
+              <OptionBtn
+                icon={<Mountain size={18} />}
+                label={tr.quiz_q3_a5}
+                onClick={() => pick("see", "esquiar")}
               />
             </div>
           </div>

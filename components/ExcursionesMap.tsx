@@ -394,7 +394,10 @@ const MapSvg: FC<MapSvgProps> = ({ activeSlug, filter, viewBox, onPinClick, loca
           mapPins.some((p) => p.x === pin.x && p.y === pin.y && p.slug === activeSlug);
         const pinExc = excursiones.find((e) => e.slug === pin.slug);
         const esDif = pinExc ? esDificultadForExcursion(pinExc) : "";
-        const dimmed = filter !== "Todas" && !matchesFilter(esDif, filter);
+        const hidden = filter !== "Todas" && !matchesFilter(esDif, filter);
+
+        // Hide pins that don't match the filter
+        if (hidden) return null;
 
         // Font size compensated for zoom (item 13): 13px real → divide by zoomScale
         const fontSize = 13 / zoomScale;
@@ -404,7 +407,6 @@ const MapSvg: FC<MapSvgProps> = ({ activeSlug, filter, viewBox, onPinClick, loca
         return (
           <g
             key={`${pin.x}-${pin.y}`}
-            opacity={dimmed ? 0.25 : 1}
             className="cursor-pointer"
             onClick={() => onPinClick(pin.slug)}
           >
@@ -480,11 +482,10 @@ interface CardProps {
   exc: Excursion;
   locale: Locale;
   isActive: boolean;
-  isDimmed: boolean;
   cardRef: (el: HTMLDivElement | null) => void;
 }
 
-const ExcursionCard: FC<CardProps> = ({ exc, locale, isActive, isDimmed, cardRef }) => {
+const ExcursionCard: FC<CardProps> = ({ exc, locale, isActive, cardRef }) => {
   const labels = t[locale];
   const seo = excursionSeo[exc.slug]?.[locale];
   const altText = seo?.alts?.[0] ?? exc.nombre[locale];
@@ -501,13 +502,12 @@ const ExcursionCard: FC<CardProps> = ({ exc, locale, isActive, isDimmed, cardRef
       className={`
         rounded-xl bg-white shadow-md border transition-all duration-300
         ${isActive ? "border-brand-orange" : "border-transparent"}
-        ${isDimmed ? "opacity-[0.35]" : "opacity-100"}
         flex flex-col
         min-[900px]:flex-row
         w-full
       `}
     >
-      <div className="relative min-[900px]:w-[38%] aspect-[4/3] min-[900px]:aspect-auto overflow-hidden rounded-t-xl min-[900px]:rounded-l-xl min-[900px]:rounded-tr-none">
+      <div className="relative min-[900px]:w-[38%] aspect-[2.2/1] min-[900px]:aspect-auto overflow-hidden rounded-t-xl min-[900px]:rounded-l-xl min-[900px]:rounded-tr-none">
         <Image
           src={exc.imagenHero}
           alt={altText}
@@ -522,8 +522,8 @@ const ExcursionCard: FC<CardProps> = ({ exc, locale, isActive, isDimmed, cardRef
         </span>
       </div>
 
-      <div className="flex-1 p-4 min-[900px]:p-5 flex flex-col gap-2">
-        <h3 className="text-lg font-semibold text-brand-text leading-tight">
+      <div className="flex-1 px-4 py-3 min-[900px]:p-5 flex flex-col gap-1 min-[900px]:gap-2">
+        <h3 className="text-[18px] min-[900px]:text-lg font-semibold text-brand-text leading-tight">
           {exc.nombre[locale]}
         </h3>
 
@@ -538,16 +538,19 @@ const ExcursionCard: FC<CardProps> = ({ exc, locale, isActive, isDimmed, cardRef
           </span>
         </div>
 
-        <p className="text-sm text-brand-text-secondary leading-relaxed line-clamp-3">
+        <p className="text-sm text-brand-text-secondary leading-relaxed line-clamp-2 min-[900px]:line-clamp-3">
           {exc.descripcionCorta[locale]}
         </p>
 
-        <MiniElevation slug={exc.slug} />
+        {/* Mini elevation graph — desktop only */}
+        <div className="hidden min-[900px]:block">
+          <MiniElevation slug={exc.slug} />
+        </div>
 
-        <div className="flex items-center gap-3 mt-auto pt-2">
+        <div className="flex items-center gap-3 mt-auto pt-1">
           <Link
             href={localePath(locale, `/excursiones/${exc.slug}`)}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-brand-orange text-brand-orange hover:bg-brand-orange/5 transition-colors"
+            className="h-[44px] flex items-center justify-center px-4 text-sm font-medium rounded-lg border border-brand-orange text-brand-orange hover:bg-brand-orange/5 transition-colors"
           >
             {labels.excursiones_ver_mas}
           </Link>
@@ -555,7 +558,7 @@ const ExcursionCard: FC<CardProps> = ({ exc, locale, isActive, isDimmed, cardRef
             href={`https://wa.me/${WA_NUMBER}?text=${waMsg}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 text-sm font-bold rounded-lg bg-brand-orange text-white hover:bg-brand-orange/90 transition-colors"
+            className="h-[44px] flex items-center justify-center px-4 text-sm font-bold rounded-lg bg-brand-orange text-white hover:bg-brand-orange/90 transition-colors"
           >
             {labels.reservar}
           </a>
@@ -567,6 +570,39 @@ const ExcursionCard: FC<CardProps> = ({ exc, locale, isActive, isDimmed, cardRef
 
 /* ───────────────── Main Component ───────────────── */
 
+/** Compute a viewBox that fits all visible pins with padding */
+function fitVisiblePins(filteredSlugs: string[]): { x: number; y: number; w: number; h: number } {
+  const pins = mapPins.filter((p) => filteredSlugs.includes(p.slug));
+  if (pins.length === 0) return { ...FULL_VB };
+  const xs = pins.map((p) => p.x);
+  const ys = pins.map((p) => p.y);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  const pad = 80;
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+  const spanW = Math.max(maxX - minX + pad * 2, ZOOM_W);
+  const spanH = Math.max(maxY - minY + pad * 2, ZOOM_H);
+  // Maintain aspect ratio of FULL_VB
+  const aspect = FULL_VB.w / FULL_VB.h;
+  let w = spanW;
+  let h = spanW / aspect;
+  if (h < spanH) {
+    h = spanH;
+    w = spanH * aspect;
+  }
+  w = Math.min(w, FULL_VB.w);
+  h = Math.min(h, FULL_VB.h);
+  return {
+    x: clamp(cx - w / 2, 0, FULL_VB.w - w),
+    y: clamp(cy - h / 2, 0, FULL_VB.h - h),
+    w,
+    h,
+  };
+}
+
 const ExcursionesMap: FC<{ locale: Locale }> = ({ locale }) => {
   const { lang } = useLang();
   const effectiveLocale = locale || (lang as Locale);
@@ -574,6 +610,11 @@ const ExcursionesMap: FC<{ locale: Locale }> = ({ locale }) => {
 
   const [activeSlug, setActiveSlug] = useState<string | null>(excursiones[0]?.slug ?? null);
   const [filter, setFilter] = useState<DifficultyKey>("Todas");
+
+  const filteredExcursions = useMemo(
+    () => excursiones.filter((e) => matchesFilter(esDificultadForExcursion(e), filter)),
+    [filter],
+  );
 
   const currentVB = useRef({ ...FULL_VB });
   const targetVB = useRef({ ...FULL_VB });
@@ -584,14 +625,26 @@ const ExcursionesMap: FC<{ locale: Locale }> = ({ locale }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isScrollingToCard = useRef(false);
 
+  // When filter changes: reset active to first visible, scroll to start, refit map
   useEffect(() => {
-    if (!activeSlug) {
-      targetVB.current = { ...FULL_VB };
+    if (filteredExcursions.length > 0) {
+      setActiveSlug(filteredExcursions[0].slug);
+    }
+    // Reset scroll container to start
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ left: 0, behavior: "instant" as ScrollBehavior });
+    }
+  }, [filter, filteredExcursions]);
+
+  useEffect(() => {
+    if (!activeSlug || !filteredExcursions.some((e) => e.slug === activeSlug)) {
+      // Fit all visible pins
+      targetVB.current = fitVisiblePins(filteredExcursions.map((e) => e.slug));
       return;
     }
     const pin = pinForExcursion(activeSlug);
     if (!pin) {
-      targetVB.current = { ...FULL_VB };
+      targetVB.current = fitVisiblePins(filteredExcursions.map((e) => e.slug));
       return;
     }
     targetVB.current = {
@@ -600,7 +653,7 @@ const ExcursionesMap: FC<{ locale: Locale }> = ({ locale }) => {
       w: ZOOM_W,
       h: ZOOM_H,
     };
-  }, [activeSlug]);
+  }, [activeSlug, filteredExcursions]);
 
   useEffect(() => {
     function tick() {
@@ -687,13 +740,14 @@ const ExcursionesMap: FC<{ locale: Locale }> = ({ locale }) => {
         {labels.map_subtitle}
       </p>
 
-      <div className="flex flex-wrap justify-center gap-2 mb-6">
+      <div className="flex flex-wrap justify-center gap-2 mb-6" role="group" aria-label="Filtrar por dificultad">
         {DIFFICULTY_FILTERS.map((f) => {
           const isActive = filter === f.key;
           return (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
+              aria-pressed={isActive}
               className={`
                 rounded-full border text-sm font-medium px-4 py-1.5 transition-colors min-h-[44px]
                 ${isActive
@@ -710,8 +764,14 @@ const ExcursionesMap: FC<{ locale: Locale }> = ({ locale }) => {
 
       <div className="grid grid-cols-1 min-[900px]:grid-cols-[1.2fr_1fr] min-[900px]:items-start gap-6">
         <div
-          className="map-sticky sticky z-10 rounded-xl overflow-hidden bg-[#FAFAF8] border border-gray-100 relative"
+          className="map-sticky sticky z-20 overflow-hidden relative
+            max-[899px]:mx-3 max-[899px]:max-h-[38vh] max-[899px]:rounded-[20px] max-[899px]:border max-[899px]:border-[#E4E4E4] max-[899px]:bg-white max-[899px]:shadow-[0_6px_16px_rgba(0,0,0,.08)]
+            min-[900px]:rounded-xl min-[900px]:bg-[#FAFAF8] min-[900px]:border min-[900px]:border-gray-100"
         >
+          {/* Mobile map title */}
+          <span className="absolute top-2 left-3 z-10 text-xs font-medium text-[#111] min-[900px]:hidden">
+            {effectiveLocale === "en" ? "Excursion map" : effectiveLocale === "pt" ? "Mapa de excursões" : "Mapa de excursiones"}
+          </span>
           <MapSvg
             activeSlug={activeSlug}
             filter={filter}
@@ -725,10 +785,7 @@ const ExcursionesMap: FC<{ locale: Locale }> = ({ locale }) => {
           ref={scrollContainerRef}
           className="flex min-[900px]:flex-col gap-4 overflow-x-auto min-[900px]:overflow-visible snap-x snap-mandatory min-[900px]:snap-none pb-4 min-[900px]:pb-0 scrollbar-hide"
         >
-          {excursiones.map((exc) => {
-            const esDif = esDificultadForExcursion(exc);
-            const matches = matchesFilter(esDif, filter);
-            return (
+          {filteredExcursions.map((exc) => (
               <div
                 key={exc.slug}
                 className="shrink-0 snap-start w-[82vw] min-[900px]:w-full min-[900px]:min-h-[80svh] min-[900px]:flex min-[900px]:items-center min-[900px]:snap-align-none"
@@ -737,12 +794,10 @@ const ExcursionesMap: FC<{ locale: Locale }> = ({ locale }) => {
                   exc={exc}
                   locale={effectiveLocale}
                   isActive={activeSlug === exc.slug}
-                  isDimmed={!matches}
                   cardRef={setCardRef(exc.slug)}
                 />
               </div>
-            );
-          })}
+            ))}
           {/* Extra space so the last card can reach center viewport */}
           <div className="hidden min-[900px]:block min-[900px]:h-[30svh]" aria-hidden="true" />
         </div>

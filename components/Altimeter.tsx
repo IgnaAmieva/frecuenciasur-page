@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 const SECTIONS_SELECTOR = "[data-alt]";
 
@@ -8,9 +8,7 @@ export default function Altimeter() {
   const [altitude, setAltitude] = useState("0 m");
   const [label, setLabel] = useState("Canal Beagle");
   const [progress, setProgress] = useState(0);
-  const [chipHidden, setChipHidden] = useState(true);
   const [altT, setAltT] = useState(0);
-  const lastYRef = useRef(0);
 
   const [mapVisible, setMapVisible] = useState(false);
 
@@ -42,10 +40,6 @@ export default function Altimeter() {
     const mapInView = mapSec ? mapSec.getBoundingClientRect().top < window.innerHeight && mapSec.getBoundingClientRect().bottom > 0 : false;
     setMapVisible(mapInView);
 
-    // Mobile chip: hide if not yet revealed or scrolling down
-    const scrollingDown = y > lastYRef.current && y - lastYRef.current > 3;
-    setChipHidden(reveal <= 0 || scrollingDown);
-    lastYRef.current = y;
   }, []);
 
   useEffect(() => {
@@ -91,22 +85,7 @@ export default function Altimeter() {
         </div>
       </div>
 
-      {/* Mobile chip — pill, fades/slides in with the rail (A5) */}
-      <div
-        className={`fixed left-1/2 top-[calc(env(safe-area-inset-top,0px)+70px)] z-[45] flex items-center gap-2 whitespace-nowrap rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,.04),0_8px_24px_rgba(0,0,0,.06)] transition-all duration-300 min-[900px]:hidden ${
-          chipHidden
-            ? "-translate-x-1/2 -translate-y-[90px] opacity-0"
-            : "-translate-x-1/2 translate-y-0"
-        }`}
-        style={{ opacity: chipHidden ? 0 : altT }}
-        aria-hidden="true"
-      >
-        <span className="grid h-[22px] w-[22px] place-items-center rounded-full bg-brand-orange text-xs text-white">
-          ↑
-        </span>
-        <span className="tabular-nums">{altitude}</span>
-        <em className="not-italic font-medium text-brand-text-secondary">{label}</em>
-      </div>
+      {/* Mobile chip removed — altitude display only on desktop sidebar */}
     </>
   );
 }
