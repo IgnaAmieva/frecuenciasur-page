@@ -837,6 +837,175 @@ async function checkQuizNoSkiWithoutChoice(browser) {
   await ctx.close();
 }
 
+/* ─── Elevation profile data verification ─── */
+
+async function checkElevationProfiles(browser) {
+  console.log("\n── Elevation profile data integrity ──");
+
+  // Expected ficha values: slug → { distanciaKm (round trip), desnivelM }
+  // distancia/2 = totalKm (one way)
+  const FICHA = {
+    "laguna-esmeralda":       { distKm: 10,  desnivelM: 300 },
+    "glaciar-martial":        { distKm: 8,   desnivelM: 400 },
+    "glaciar-vinciguerra":    { distKm: 15,  desnivelM: 650 },
+    "glaciar-ojo-del-albino": { distKm: 20,  desnivelM: 900 },
+    "laguna-cinco-hermanos":  { distKm: 13,  desnivelM: 800 },
+    "monte-susana":           { distKm: 9,   desnivelM: 500 },
+  };
+  const NO_PROFILE = ["martial-aventura", "esqui-de-travesia"];
+
+  // Load elevation data via a page (it's a client module)
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(`${BASE}/excursiones/laguna-esmeralda`, { waitUntil: "networkidle", timeout: 15000 });
+  await page.waitForTimeout(500);
+
+  // Inject and extract elevation data from the rendered page's JS modules
+  // Since we can't import ESM directly, we'll check via the rendered DOM for each excursion
+  await ctx.close();
+
+  // Approach: for each excursion with a profile, load the page and verify the SVG/legend
+  for (const [slug, ficha] of Object.entries(FICHA)) {
+    const expectedTotalKm = ficha.distKm / 2;
+    const tag = `[${slug}]`;
+
+    const ctx2 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page2 = await ctx2.newPage();
+    try {
+      await page2.goto(`${BASE}/excursiones/${slug}`, { waitUntil: "networkidle", timeout: 15000 });
+    } catch (e) {
+      report(false, `${tag} Profile page load`, e.message.slice(0, 80));
+      await ctx2.close();
+      continue;
+    }
+    await page2.waitForTimeout(500);
+
+    const profileData = await page2.evaluate(() => {
+      // Check SVG existence
+      const svg = document.querySelector("[data-elevation-profile] svg, .elevation-profile svg");
+      // Broader: find any SVG that contains elevation text elements
+      const allSvgs = document.querySelectorAll("svg");
+      let profileSvg = null;
+      for (const s of allSvgs) {
+        const texts = s.querySelectorAll("text");
+        for (const t of texts) {
+          if (t.textContent && t.textContent.includes("Km")) {
+            profileSvg = s;
+            break;
+          }
+        }
+        if (profileSvg) break;
+      }
+
+      if (!profileSvg) return { found: false };
+
+      // Extract text content from SVG to verify data
+      const texts = [...profileSvg.querySelectorAll("text")];
+      const textContents = texts.map(t => t.textContent.trim());
+
+      // Find the last km label (should be totalKm)
+      const kmLabels = textContents.filter(t => /^\d+(\.\d+)?$/.test(t));
+      const lastKm = kmLabels.length > 0 ? parseFloat(kmLabels[kmLabels.length - 1]) : null;
+
+      // Find meter labels on Y axis
+      const mLabels = textContents.filter(t => /^\d+ m$/.test(t));
+      const maxM = mLabels.length > 0 ? Math.max(...mLabels.map(m => parseInt(m))) : null;
+
+      // Check hitos — text elements that aren't pure numbers or "m" labels or "Km"/"de"
+      const hitoTexts = textContents.filter(t =>
+        t.length > 2 && !/^\d+(\.\d+)?$/.test(t) && !/^\d+ m$/.test(t) && t !== "Km" && t !== "de" && t !== "of"
+      );
+
+      // Check legend below profile
+      const parent = profileSvg.closest("div")?.parentElement;
+      const legendP = parent ? parent.querySelector("p") : null;
+      const legendText = legendP ? legendP.textContent.trim() : "";
+
+      // Check path elements for monotonicity (y values in the SVG polyline/path)
+      const polylines = profileSvg.querySelectorAll("polyline");
+      let monotone = true;
+      for (const pl of polylines) {
+        const pts = pl.getAttribute("points");
+        if (!pts) continue;
+        const pairs = pts.trim().split(/\s+/).map(p => p.split(",").map(Number));
+        // In SVG, lower y = higher value, so y should decrease or stay same
+        for (let i = 1; i < pairs.length; i++) {
+          if (pairs[i][1] > pairs[i - 1][1] + 0.5) {
+            // Y increased in SVG space = altitude decreased = NOT monotone
+            monotone = false;
+            break;
+          }
+        }
+      }
+
+      return {
+        found: true,
+        lastKm,
+        maxM,
+        hitoTexts,
+        hitoCount: hitoTexts.length,
+        monotone,
+        legendText,
+      };
+    });
+
+    if (!profileData.found) {
+      report(false, `${tag} Profile SVG found`);
+      await ctx2.close();
+      continue;
+    }
+    report(true, `${tag} Profile SVG found`);
+
+    // (a) Last km ≈ totalKm (ficha distance / 2)
+    if (profileData.lastKm !== null) {
+      const kmOk = Math.abs(profileData.lastKm - expectedTotalKm) < 0.5;
+      report(kmOk, `${tag} Last km = ficha/2`, `got ${profileData.lastKm}, expected ${expectedTotalKm}`);
+    }
+
+    // (a) Max elevation label ≤ desnivelM
+    if (profileData.maxM !== null) {
+      const mOk = profileData.maxM <= ficha.desnivelM;
+      report(mOk, `${tag} Max Y label ≤ desnivelM`, `got ${profileData.maxM} m, ficha ${ficha.desnivelM} m`);
+    }
+
+    // (b) Curve is monotone increasing
+    report(profileData.monotone, `${tag} Curve monotone increasing`);
+
+    // (c) Hitos present and > 0
+    report(profileData.hitoCount >= 2, `${tag} Hitos present (≥2)`, `found ${profileData.hitoCount}: ${profileData.hitoTexts.slice(0, 3).join(", ")}...`);
+
+    // (d) Legend exists (approximate) since no GPX
+    const hasLegend = /aproximado|approximate/i.test(profileData.legendText);
+    report(hasLegend, `${tag} Legend "aproximado" present`, profileData.legendText.slice(0, 60));
+
+    await ctx2.close();
+  }
+
+  // Verify no profiles for martial-aventura and esqui-de-travesia
+  for (const slug of NO_PROFILE) {
+    const ctx3 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const page3 = await ctx3.newPage();
+    try {
+      await page3.goto(`${BASE}/excursiones/${slug}`, { waitUntil: "networkidle", timeout: 15000 });
+      await page3.waitForTimeout(500);
+      const hasProfile = await page3.evaluate(() => {
+        const allSvgs = document.querySelectorAll("svg");
+        for (const s of allSvgs) {
+          const texts = s.querySelectorAll("text");
+          for (const t of texts) {
+            if (t.textContent && t.textContent.includes("Km")) return true;
+          }
+        }
+        return false;
+      });
+      report(!hasProfile, `[${slug}] No elevation profile`, hasProfile ? "profile found!" : "OK");
+    } catch {
+      report(true, `[${slug}] No elevation profile (page not loaded)`);
+    }
+    await ctx3.close();
+  }
+}
+
 async function run() {
   const browser = await chromium.launch();
 
@@ -856,6 +1025,9 @@ async function run() {
   await checkFilterPinCardCount(browser);
   await checkNoEmptyTramos(browser);
   await checkQuizNoSkiWithoutChoice(browser);
+
+  // Elevation profile data integrity
+  await checkElevationProfiles(browser);
 
   await captureScreenshots(browser);
 

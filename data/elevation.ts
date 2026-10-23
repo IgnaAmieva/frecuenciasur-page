@@ -1,8 +1,11 @@
 import type { Locale } from "@/lib/i18n";
 
+/* ───────── Types ───────── */
+
 export interface ElevationPoint {
   km: number;
-  alt: number; // meters, normalized 0-1 for SVG rendering
+  /** Accumulated elevation gain in meters (0 at trailhead) */
+  alt: number;
 }
 
 export interface Hito {
@@ -12,105 +15,143 @@ export interface Hito {
 
 export interface ElevationData {
   slug: string;
+  /** One-way distance in km (= ficha distance / 2) */
   totalKm: number;
+  /** Total elevation gain in meters (= ficha desnivel) */
+  desnivelM: number;
   points: ElevationPoint[];
   hitos: Hito[];
+  /** true if generated from a real GPX track */
+  hasGpx: boolean;
+  /** Route type — determines legend text about the return */
+  routeType: "ida-vuelta" | "travesia";
 }
 
-// APROXIMADO — datos estimados hasta tener GPX reales
+/* ───────── Curve generation ───────── */
+
+/**
+ * Generate a monotone-increasing elevation curve.
+ * exponent > 1 → concave-up (gentle start, steep end, typical of glacial valleys).
+ */
+function curve(
+  totalKm: number,
+  desnivelM: number,
+  exponent: number,
+  steps = 20,
+): ElevationPoint[] {
+  const pts: ElevationPoint[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    pts.push({
+      km: +(t * totalKm).toFixed(2),
+      alt: +(desnivelM * Math.pow(t, exponent)).toFixed(0),
+    });
+  }
+  return pts;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Profile definitions — all values derived from data/excursiones.ts ficha:
+     totalKm = distancia (km) / 2   (all are round-trip)
+     desnivelM = desnivel upper bound in meters
+   Hito km positions based on relative walking time (see prompt table).
+   ⚠ = CONFIRMAR CON GUÍA
+   ───────────────────────────────────────────────────────────── */
+
+// APROXIMADO — se actualizará con el track GPS real.
 export const elevationProfiles: ElevationData[] = [
   {
+    // Ficha: 10 km / 5 h / 200–300 m → 5 km ida, 300 m desnivel
     slug: "laguna-esmeralda",
     totalKm: 5,
-    points: [
-      { km: 0, alt: 0 }, { km: 0.5, alt: 0.04 }, { km: 1, alt: 0.08 },
-      { km: 1.5, alt: 0.1 }, { km: 2, alt: 0.13 }, { km: 2.5, alt: 0.15 },
-      { km: 3, alt: 0.2 }, { km: 3.4, alt: 0.32 }, { km: 3.8, alt: 0.5 },
-      { km: 4.2, alt: 0.7 }, { km: 4.6, alt: 0.86 }, { km: 5, alt: 0.9 },
-    ],
+    desnivelM: 300,
+    points: curve(5, 300, 1.6),
     hitos: [
-      { km: 0.5, label: { es: "Bosque", en: "Forest", pt: "Floresta" } },
-      { km: 2, label: { es: "Turbales", en: "Peat bogs", pt: "Turfeiras" } },
-      { km: 3.7, label: { es: "Valle glaciar", en: "Glacial valley", pt: "Vale glaciar" } },
-      { km: 5, label: { es: "Laguna", en: "Lagoon", pt: "Lagoa" } },
+      { km: 1.8, label: { es: "Bosque de lenga", en: "Lenga forest", pt: "Floresta de lenga" } },
+      { km: 3.2, label: { es: "Turbal", en: "Peat bog", pt: "Turfeira" } },
+      { km: 5.0, label: { es: "Laguna Esmeralda", en: "Laguna Esmeralda", pt: "Laguna Esmeralda" } },
     ],
+    hasGpx: false,
+    routeType: "ida-vuelta",
   },
   {
+    // Ficha: 8 km / 5 h / 400 m → 4 km ida, 400 m desnivel
     slug: "glaciar-martial",
     totalKm: 4,
-    points: [
-      { km: 0, alt: 0 }, { km: 0.5, alt: 0.08 }, { km: 1, alt: 0.18 },
-      { km: 1.5, alt: 0.3 }, { km: 2, alt: 0.45 }, { km: 2.5, alt: 0.58 },
-      { km: 3, alt: 0.72 }, { km: 3.5, alt: 0.85 }, { km: 4, alt: 1 },
-    ],
+    desnivelM: 400,
+    points: curve(4, 400, 1.3),
     hitos: [
-      { km: 0.5, label: { es: "Aerosilla", en: "Chairlift", pt: "Teleférico" } },
-      { km: 2, label: { es: "Bosque", en: "Forest", pt: "Floresta" } },
-      { km: 3.5, label: { es: "Nieve", en: "Snow", pt: "Neve" } },
-      { km: 4, label: { es: "Glaciar", en: "Glacier", pt: "Glaciar" } },
+      { km: 0.3, label: { es: "Aerosilla", en: "Chairlift", pt: "Teleférico" } },
+      { km: 1.8, label: { es: "Bosque", en: "Forest", pt: "Floresta" } },
+      { km: 4.0, label: { es: "Glaciar", en: "Glacier", pt: "Glaciar" } },
     ],
+    hasGpx: false,
+    routeType: "ida-vuelta",
   },
   {
+    // Ficha: 15 km / 7 h / 650 m ⚠ → 7.5 km ida, 650 m desnivel
     slug: "glaciar-vinciguerra",
     totalKm: 7.5,
-    points: [
-      { km: 0, alt: 0 }, { km: 1, alt: 0.05 }, { km: 2, alt: 0.1 },
-      { km: 3, alt: 0.18 }, { km: 4, alt: 0.32 }, { km: 5, alt: 0.5 },
-      { km: 6, alt: 0.7 }, { km: 7, alt: 0.88 }, { km: 7.5, alt: 1 },
-    ],
+    desnivelM: 650,
+    points: curve(7.5, 650, 1.7),
     hitos: [
-      { km: 1, label: { es: "Bosque", en: "Forest", pt: "Floresta" } },
-      { km: 3, label: { es: "Turbales", en: "Peat bogs", pt: "Turfeiras" } },
-      { km: 5.5, label: { es: "Valle glaciar", en: "Glacial valley", pt: "Vale glaciar" } },
-      { km: 7.5, label: { es: "Laguna de los Témpanos", en: "Iceberg Lagoon", pt: "Lagoa dos Icebergs" } },
+      { km: 0.5, label: { es: "Portón y puente", en: "Gate and bridge", pt: "Portão e ponte" } },
+      { km: 2.6, label: { es: "Bosque (bifurcación)", en: "Forest (fork)", pt: "Floresta (bifurcação)" } },
+      { km: 4.5, label: { es: "Turbal y arroyos", en: "Peat bog and streams", pt: "Turfeira e riachos" } },
+      { km: 6.4, label: { es: "Laguna de los Témpanos", en: "Iceberg Lagoon", pt: "Lagoa dos Icebergs" } },
+      { km: 7.5, label: { es: "Glaciar Vinciguerra", en: "Vinciguerra Glacier", pt: "Glaciar Vinciguerra" } },
     ],
+    hasGpx: false,
+    routeType: "ida-vuelta",
   },
   {
+    // Ficha: 20 km / 8 h / 900 m ⚠ → 10 km ida, 900 m desnivel
+    // Steep final ascent (exponent 2.0)
     slug: "glaciar-ojo-del-albino",
     totalKm: 10,
-    points: [
-      { km: 0, alt: 0 }, { km: 1, alt: 0.04 }, { km: 2, alt: 0.08 },
-      { km: 3, alt: 0.12 }, { km: 4, alt: 0.18 }, { km: 5, alt: 0.3 },
-      { km: 6, alt: 0.45 }, { km: 7, alt: 0.6 }, { km: 8, alt: 0.75 },
-      { km: 9, alt: 0.88 }, { km: 10, alt: 1 },
-    ],
+    desnivelM: 900,
+    points: curve(10, 900, 2.0),
     hitos: [
-      { km: 1, label: { es: "Bosque", en: "Forest", pt: "Floresta" } },
-      { km: 3, label: { es: "Turbales", en: "Peat bogs", pt: "Turfeiras" } },
-      { km: 5, label: { es: "Laguna Esmeralda", en: "Laguna Esmeralda", pt: "Laguna Esmeralda" } },
-      { km: 10, label: { es: "Glaciar", en: "Glacier", pt: "Glaciar" } },
+      { km: 3.5, label: { es: "Bosque de lenga", en: "Lenga forest", pt: "Floresta de lenga" } },
+      { km: 7.0, label: { es: "Turbal y valle", en: "Peat bog and valley", pt: "Turfeira e vale" } },
+      { km: 10.0, label: { es: "Glaciar Ojo del Albino", en: "Ojo del Albino Glacier", pt: "Glaciar Ojo del Albino" } },
     ],
+    hasGpx: false,
+    routeType: "ida-vuelta",
   },
   {
+    // Ficha: 13 km ida y vuelta / 8 h / 800 m ⚠ → 6.5 km ida, 800 m desnivel
+    // Cruce de río at ~60%, steep final 40%
     slug: "laguna-cinco-hermanos",
     totalKm: 6.5,
-    points: [
-      { km: 0, alt: 0 }, { km: 1, alt: 0.1 }, { km: 2, alt: 0.25 },
-      { km: 3, alt: 0.42 }, { km: 4, alt: 0.58 }, { km: 5, alt: 0.74 },
-      { km: 5.5, alt: 0.85 }, { km: 6, alt: 0.92 }, { km: 6.5, alt: 1 },
-    ],
+    desnivelM: 800,
+    points: curve(6.5, 800, 1.8),
     hitos: [
-      { km: 1, label: { es: "Bosque", en: "Forest", pt: "Floresta" } },
-      { km: 3, label: { es: "Cascada", en: "Waterfall", pt: "Cascata" } },
-      { km: 5, label: { es: "Montaña", en: "Mountain", pt: "Montanha" } },
-      { km: 6.5, label: { es: "Laguna", en: "Lagoon", pt: "Lagoa" } },
+      { km: 0.5, label: { es: "Kawi Yoppen", en: "Kawi Yoppen", pt: "Kawi Yoppen" } },
+      { km: 1.2, label: { es: "Cascada Velo de la Novia", en: "Bridal Veil Waterfall", pt: "Cascata Véu da Noiva" } },
+      { km: 3.9, label: { es: "Cruce de río", en: "River crossing", pt: "Travessia do rio" } },
+      { km: 6.5, label: { es: "Laguna Cinco Hermanos", en: "Laguna Cinco Hermanos", pt: "Laguna Cinco Hermanos" } },
     ],
+    hasGpx: false,
+    routeType: "ida-vuelta",
   },
   {
+    // Ficha: 9 km ida y vuelta / 5 h / 500 m ⚠ → 4.5 km ida, 500 m desnivel
+    // Mirador at ~40% ascent time (~1h of ~2.5h)
     slug: "monte-susana",
     totalKm: 4.5,
-    points: [
-      { km: 0, alt: 0 }, { km: 0.5, alt: 0.06 }, { km: 1, alt: 0.15 },
-      { km: 1.5, alt: 0.28 }, { km: 2, alt: 0.42 }, { km: 2.5, alt: 0.55 },
-      { km: 3, alt: 0.68 }, { km: 3.5, alt: 0.8 }, { km: 4, alt: 0.92 },
-      { km: 4.5, alt: 1 },
-    ],
+    desnivelM: 500,
+    points: curve(4.5, 500, 1.4),
     hitos: [
-      { km: 0.5, label: { es: "Bosque", en: "Forest", pt: "Floresta" } },
-      { km: 2, label: { es: "Ladera", en: "Hillside", pt: "Encosta" } },
+      { km: 0.5, label: { es: "Barrio Costa Susana", en: "Costa Susana", pt: "Bairro Costa Susana" } },
+      { km: 1.8, label: { es: "Mirador", en: "Viewpoint", pt: "Mirante" } },
       { km: 4.5, label: { es: "Cumbre", en: "Summit", pt: "Cume" } },
     ],
+    hasGpx: false,
+    routeType: "ida-vuelta",
   },
+  // martial-aventura: sin datos — NO perfil
+  // esqui-de-travesia: sin datos — NO perfil
 ];
 
 export function getElevation(slug: string): ElevationData | undefined {

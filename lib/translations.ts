@@ -126,7 +126,11 @@ export const t = {
     cumbre_ver: "Ver excursiones",
     perfil_km: "Km",
     perfil_de: "de",
-    perfil_nota: "Perfil aproximado",
+    perfil_ida: "Ida",
+    perfil_ida_vuelta: "Ida y vuelta",
+    perfil_km_ida: "Km de ida",
+    perfil_vuelta_nota: "La vuelta repite el mismo camino.",
+    perfil_nota: "Perfil aproximado. Se actualizará con el track GPS real.",
   },
   en: {
     nav_nosotros: "About Us",
@@ -255,7 +259,11 @@ export const t = {
     cumbre_ver: "See excursions",
     perfil_km: "Km",
     perfil_de: "of",
-    perfil_nota: "Approximate profile",
+    perfil_ida: "Way up",
+    perfil_ida_vuelta: "Round trip",
+    perfil_km_ida: "One-way km",
+    perfil_vuelta_nota: "The return follows the same path.",
+    perfil_nota: "Approximate profile. Will be updated with the real GPS track.",
   },
   pt: {
     nav_nosotros: "Sobre nós",
@@ -384,7 +392,11 @@ export const t = {
     cumbre_ver: "Ver excursões",
     perfil_km: "Km",
     perfil_de: "de",
-    perfil_nota: "Perfil aproximado",
+    perfil_ida: "Ida",
+    perfil_ida_vuelta: "Ida e volta",
+    perfil_km_ida: "Km de ida",
+    perfil_vuelta_nota: "A volta segue o mesmo caminho.",
+    perfil_nota: "Perfil aproximado. Será atualizado com o track GPS real.",
   },
 } as const;
 
