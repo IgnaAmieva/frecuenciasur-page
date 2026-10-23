@@ -23,6 +23,8 @@ export interface ElevationData {
   hitos: Hito[];
   /** true if generated from a real GPX track */
   hasGpx: boolean;
+  /** Route type — determines legend text about the return */
+  routeType: "ida-vuelta" | "travesia";
 }
 
 /* ───────── Curve generation ───────── */
@@ -70,6 +72,7 @@ export const elevationProfiles: ElevationData[] = [
       { km: 5.0, label: { es: "Laguna Esmeralda", en: "Laguna Esmeralda", pt: "Laguna Esmeralda" } },
     ],
     hasGpx: false,
+    routeType: "ida-vuelta",
   },
   {
     // Ficha: 8 km / 5 h / 400 m → 4 km ida, 400 m desnivel
@@ -83,6 +86,7 @@ export const elevationProfiles: ElevationData[] = [
       { km: 4.0, label: { es: "Glaciar", en: "Glacier", pt: "Glaciar" } },
     ],
     hasGpx: false,
+    routeType: "ida-vuelta",
   },
   {
     // Ficha: 15 km / 7 h / 650 m ⚠ → 7.5 km ida, 650 m desnivel
@@ -98,6 +102,7 @@ export const elevationProfiles: ElevationData[] = [
       { km: 7.5, label: { es: "Glaciar Vinciguerra", en: "Vinciguerra Glacier", pt: "Glaciar Vinciguerra" } },
     ],
     hasGpx: false,
+    routeType: "ida-vuelta",
   },
   {
     // Ficha: 20 km / 8 h / 900 m ⚠ → 10 km ida, 900 m desnivel
@@ -112,6 +117,7 @@ export const elevationProfiles: ElevationData[] = [
       { km: 10.0, label: { es: "Glaciar Ojo del Albino", en: "Ojo del Albino Glacier", pt: "Glaciar Ojo del Albino" } },
     ],
     hasGpx: false,
+    routeType: "ida-vuelta",
   },
   {
     // Ficha: 13 km ida y vuelta / 8 h / 800 m ⚠ → 6.5 km ida, 800 m desnivel
@@ -127,6 +133,7 @@ export const elevationProfiles: ElevationData[] = [
       { km: 6.5, label: { es: "Laguna Cinco Hermanos", en: "Laguna Cinco Hermanos", pt: "Laguna Cinco Hermanos" } },
     ],
     hasGpx: false,
+    routeType: "ida-vuelta",
   },
   {
     // Ficha: 9 km ida y vuelta / 5 h / 500 m ⚠ → 4.5 km ida, 500 m desnivel
@@ -141,6 +148,7 @@ export const elevationProfiles: ElevationData[] = [
       { km: 4.5, label: { es: "Cumbre", en: "Summit", pt: "Cume" } },
     ],
     hasGpx: false,
+    routeType: "ida-vuelta",
   },
   // martial-aventura: sin datos — NO perfil
   // esqui-de-travesia: sin datos — NO perfil

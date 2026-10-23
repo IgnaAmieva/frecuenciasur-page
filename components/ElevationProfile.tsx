@@ -3,12 +3,13 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import type { Locale } from "@/lib/i18n";
 import { getElevation } from "@/data/elevation";
+import { excursionPorSlug } from "@/data/excursiones";
 import { excursionSeo } from "@/lib/seo";
 import { t } from "@/lib/translations";
 import { useLang } from "@/context/LangContext";
 
 /* ───────────── SVG layout constants ───────────── */
-const P = { w: 640, h: 220, l: 44, r: 14, t: 40, b: 26 };
+const P = { w: 640, h: 240, l: 44, r: 14, t: 40, b: 42 };
 const X = (km: number, totalKm: number) =>
   P.l + (km / totalKm) * (P.w - P.l - P.r);
 /** Y position: alt in meters, desnivelM = max elevation gain */
@@ -45,6 +46,8 @@ function ElevationSvg({
   activeHitoIdx,
   locale,
   compact,
+  xAxisLabel,
+  destinoLabel,
 }: {
   slug: string;
   points: { km: number; alt: number }[];
@@ -55,6 +58,8 @@ function ElevationSvg({
   activeHitoIdx: number;
   locale: Locale;
   compact?: boolean;
+  xAxisLabel?: string;
+  destinoLabel?: string;
 }) {
   const pathD = points
     .map((p, i) => `${i === 0 ? "M" : "L"}${X(p.km, totalKm).toFixed(1)},${Y(p.alt, desnivelM).toFixed(1)}`)
@@ -123,6 +128,20 @@ function ElevationSvg({
         </g>
       ))}
 
+      {/* X-axis title: "Km de ida" */}
+      {!compact && xAxisLabel && (
+        <text x={P.l + 2} y={P.h - P.b + 28} textAnchor="start" fontSize={9} fill="#999">
+          {xAxisLabel}
+        </text>
+      )}
+
+      {/* Destination label at end of X-axis */}
+      {!compact && destinoLabel && (
+        <text x={X(totalKm, totalKm)} y={P.h - P.b + 28} textAnchor="end" fontSize={8.5} fontWeight={600} fill="#E85D04">
+          {destinoLabel}
+        </text>
+      )}
+
       <path d={areaD} fill="#F4F4F2" clipPath={`url(#unwalked-${slug}${compact ? "-c" : ""})`} />
       <path d={areaD} fill="rgba(232,93,4,.16)" clipPath={`url(#walked-${slug}${compact ? "-c" : ""})`} />
 
@@ -155,6 +174,7 @@ export default function ElevationProfile({ slug, locale }: Props) {
   const { lang } = useLang();
   const tr = t[locale];
   const data = getElevation(slug);
+  const exc = excursionPorSlug(slug);
   const seo = excursionSeo[slug]?.[locale];
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -251,10 +271,13 @@ export default function ElevationProfile({ slug, locale }: Props) {
     return () => observer.disconnect();
   }, [data]);
 
-  if (!data) return null;
+  if (!data || !exc) return null;
 
-  const { totalKm, desnivelM, points, hitos, hasGpx } = data;
+  const { totalKm, desnivelM, points, hitos, hasGpx, routeType } = data;
   const currentKm = progress * totalKm;
+  const distanciaTotal = exc.distancia[locale];
+  const destinoLabel = hitos.length > 0 ? hitos[hitos.length - 1].label[locale] : "";
+  const routeNota = routeType === "ida-vuelta" ? tr.perfil_vuelta_nota : "";
 
   const activeHitoIdx = hitos.reduce(
     (acc, h, i) => (currentKm >= h.km ? i : acc),
@@ -278,14 +301,17 @@ export default function ElevationProfile({ slug, locale }: Props) {
         className="sticky z-10 min-[900px]:hidden mx-3 rounded-[20px] border border-[#E4E4E4] bg-white shadow-[0_6px_16px_rgba(0,0,0,.08)]"
         style={{ top: "var(--header-h)" }}
       >
-        <div className="flex items-center gap-2 px-5 pt-2 pb-1">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0 px-5 pt-2">
           <span className="text-sm font-semibold tabular-nums text-[#1a1a1a]">
-            {tr.perfil_km} {currentKm.toFixed(1)} {tr.perfil_de} {totalKm}
+            {tr.perfil_ida} · km {currentKm.toFixed(1)} {tr.perfil_de} {totalKm}
           </span>
           <span className="rounded-full bg-[rgba(232,93,4,.12)] px-3 py-0.5 text-xs font-medium text-[#E85D04]">
             {currentHitoName}
           </span>
         </div>
+        <p className="px-5 text-[11px] text-[#666]">
+          {tr.perfil_ida_vuelta}: {distanciaTotal}
+        </p>
         <div className="px-5 pb-2">
           <ElevationSvg
             slug={slug} points={points} totalKm={totalKm} desnivelM={desnivelM} hitos={hitos}
@@ -357,25 +383,28 @@ export default function ElevationProfile({ slug, locale }: Props) {
         {/* ─── Desktop: profile card (right, sticky) ─── */}
         <div className="hidden min-[900px]:block min-[900px]:order-2">
           <div className="sticky z-10" style={{ top: "calc(var(--header-h) + 24px)" }}>
-            <div className="flex items-center gap-3 px-1 pb-2">
+            <div className="flex items-center gap-3 px-1 pb-1">
               <span className="text-sm font-semibold tabular-nums text-[#1a1a1a]">
-                {tr.perfil_km} {currentKm.toFixed(1)} {tr.perfil_de} {totalKm}
+                {tr.perfil_ida} · km {currentKm.toFixed(1)} {tr.perfil_de} {totalKm}
               </span>
               <span className="rounded-full bg-[rgba(232,93,4,.12)] px-3 py-0.5 text-xs font-medium text-[#E85D04]">
                 {currentHitoName}
               </span>
             </div>
+            <p className="px-1 pb-2 text-xs text-[#666]">
+              {tr.perfil_ida_vuelta}: {distanciaTotal}
+            </p>
 
             <div className="rounded-2xl bg-white p-5 shadow-md mb-6">
               <ElevationSvg
                 slug={slug} points={points} totalKm={totalKm} desnivelM={desnivelM} hitos={hitos}
                 currentKm={currentKm} activeHitoIdx={activeHitoIdx} locale={locale}
+                xAxisLabel={tr.perfil_km_ida} destinoLabel={destinoLabel}
               />
-              {!hasGpx && (
-                <p className="mt-2 text-center text-[13px]" style={{ color: "#2B2B2B" }}>
-                  {tr.perfil_nota}
-                </p>
-              )}
+              <div className="mt-2 text-center text-[13px]" style={{ color: "#2B2B2B" }}>
+                {routeNota && <p>{routeNota}</p>}
+                {!hasGpx && <p>{tr.perfil_nota}</p>}
+              </div>
             </div>
           </div>
         </div>
