@@ -87,7 +87,7 @@ export default async function LocaleLayout({
       lang={locale}
       className={inter.variable}
     >
-      <body style={{ color: "#1a1a1a" }} className="font-sans text-brand-text">
+      <body style={{ color: "#1a1a1a" }} className="font-sans text-brand-text pb-[92px] md:pb-0">
         <LangProvider locale={locale as "es" | "en" | "pt"}>
           {children}
           <MobileCTA />

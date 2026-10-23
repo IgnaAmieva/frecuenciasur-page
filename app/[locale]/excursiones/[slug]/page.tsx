@@ -11,7 +11,6 @@ import ElevationProfile from "@/components/ElevationProfile";
 import ExcursionHeroCarousel from "@/components/ExcursionHeroCarousel";
 import ExcursionGallery from "@/components/ExcursionGallery";
 import ExcursionBookButton from "@/components/ExcursionBookButton";
-import ExcursionMobileBar from "@/components/ExcursionMobileBar";
 import ExcursionBackLink from "@/components/ExcursionBackLink";
 import {
   UserCheck,
@@ -233,8 +232,8 @@ export default async function ExcursionPage({
           {/* Elevation Profile */}
           <ElevationProfile slug={slug} locale={locale} />
 
-          {/* Book button — position 2: after info grid */}
-          <div className="flex justify-center px-5 pb-8">
+          {/* Book button — position 2: after elevation profile */}
+          <div className="flex justify-center px-5 pt-10 pb-10">
             <ExcursionBookButton
               waUrl={waUrl}
               locale={locale}
@@ -243,8 +242,8 @@ export default async function ExcursionPage({
             />
           </div>
 
-          {/* Descripción */}
-          <section className="px-5 py-16">
+          {/* Back link + Descripción */}
+          <section className="px-5 pb-16">
             <div className="mx-auto max-w-2xl">
               <ExcursionBackLink locale={locale} />
               <div className="space-y-4" style={{ maxWidth: "65ch" }}>
@@ -301,12 +300,6 @@ export default async function ExcursionPage({
 
       <Footer locale={locale} />
 
-      {/* Mobile sticky bar */}
-      <ExcursionMobileBar
-        waUrl={waUrl}
-        locale={locale}
-        excursionSlug={slug}
-      />
     </>
   );
 }

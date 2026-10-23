@@ -499,6 +499,134 @@ async function captureScreenshots(browser) {
   console.log("  Excursion mobile: 5 positions captured");
 }
 
+/* ─── Single booking button rule ─── */
+
+async function checkSingleBookingButton(browser) {
+  console.log("\n── Single booking button: never >1 visible at once ──");
+  const EXCURSION_SLUGS = [
+    "laguna-esmeralda", "glaciar-martial", "glaciar-vinciguerra",
+    "glaciar-ojo-del-albino", "laguna-cinco-hermanos",
+    "martial-aventura", "monte-susana", "esqui-de-travesia",
+  ];
+  const LOCALES = ["es", "en", "pt"];
+  const LOCALE_PREFIX = { es: "", en: "/en", pt: "/pt" };
+  const VIEWPORTS_BOOKING = [
+    { name: "mobile", width: 390, height: 844 },
+    { name: "desktop", width: 1440, height: 900 },
+  ];
+
+  for (const slug of EXCURSION_SLUGS) {
+    for (const loc of LOCALES) {
+      for (const vp of VIEWPORTS_BOOKING) {
+        const pageUrl = `${BASE}${LOCALE_PREFIX[loc]}/excursiones/${slug}`;
+        const tag = `[${vp.name} ${loc} ${slug}]`;
+
+        const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
+        const page = await ctx.newPage();
+        try {
+          await page.goto(pageUrl, { waitUntil: "networkidle", timeout: 15000 });
+        } catch (e) {
+          report(false, `${tag} Page load`, e.message.slice(0, 80));
+          await ctx.close();
+          continue;
+        }
+        await page.waitForTimeout(500);
+        await page.evaluate(() => { document.documentElement.style.scrollBehavior = "auto"; });
+
+        const scrollHeight = await page.evaluate(() => document.body.scrollHeight);
+        let maxVisible = 0;
+        let worstScroll = 0;
+        let worstLabels = [];
+        let extraFixedFound = [];
+
+        for (let scrollY = 0; scrollY < scrollHeight; scrollY += 200) {
+          await page.evaluate((y) => window.scrollTo(0, y), scrollY);
+          await page.waitForTimeout(350);
+
+          const result = await page.evaluate(() => {
+            const vh = window.innerHeight;
+            const vw = window.innerWidth;
+
+            // Only count page-level booking CTAs (not nav-level)
+            // 1. Elements with data-cta-position (ExcursionBookButton + MobileCTA bar)
+            // 2. Skip anything inside <nav> (that's navigation, not content CTA)
+            // 3. Avoid double-counting parent div + child a of MobileCTA
+            const ctaEls = document.querySelectorAll("[data-cta-position]");
+
+            let visibleCount = 0;
+            const visibleLabels = [];
+
+            for (const el of ctaEls) {
+              // Skip if inside nav
+              if (el.closest("nav")) continue;
+
+              const rect = el.getBoundingClientRect();
+              if (rect.width === 0 || rect.height === 0) continue;
+
+              const inViewport =
+                rect.bottom > 0 && rect.top < vh &&
+                rect.right > 0 && rect.left < vw;
+              if (!inViewport) continue;
+
+              // Walk up tree checking visibility
+              let hidden = false;
+              let node = el;
+              while (node && node !== document.body) {
+                const s = window.getComputedStyle(node);
+                if (s.display === "none" || s.visibility === "hidden" || parseFloat(s.opacity) < 0.1) {
+                  hidden = true;
+                  break;
+                }
+                node = node.parentElement;
+              }
+              if (hidden) continue;
+
+              visibleCount++;
+              visibleLabels.push(el.getAttribute("data-cta-position"));
+            }
+
+            // Check for extra fixed/sticky bottom elements
+            const extraFixed = [];
+            for (const el of document.querySelectorAll("*")) {
+              const s = window.getComputedStyle(el);
+              if (s.position !== "fixed") continue;
+              const rect = el.getBoundingClientRect();
+              if (rect.top <= vh * 0.5 || rect.height <= 10) continue;
+              if (parseFloat(s.opacity) === 0) continue;
+              if (el.getAttribute("data-cta-position") === "barra-mobile") continue;
+              extraFixed.push(`${el.tagName}.${(el.className || "").toString().slice(0, 40)}`);
+            }
+
+            return { visibleCount, visibleLabels, extraFixed };
+          });
+
+          if (result.visibleCount > maxVisible) {
+            maxVisible = result.visibleCount;
+            worstScroll = scrollY;
+            worstLabels = result.visibleLabels;
+          }
+          if (result.extraFixed.length > 0 && extraFixedFound.length === 0) {
+            extraFixedFound = result.extraFixed;
+          }
+        }
+
+        report(
+          maxVisible <= 1,
+          `${tag} Max 1 booking button visible`,
+          maxVisible > 1 ? `${maxVisible} at scrollY=${worstScroll}: ${worstLabels.join(", ")}` : "OK"
+        );
+        report(
+          extraFixedFound.length === 0,
+          `${tag} No extra fixed bottom elements`,
+          extraFixedFound.length > 0 ? extraFixedFound.join(", ") : "OK"
+        );
+
+        await ctx.close();
+      }
+    }
+  }
+}
+
 /* ─── NEW: Ajustes-mobile checks ─── */
 
 async function checkNoAltitudeChipMobile(browser) {
@@ -719,7 +847,10 @@ async function run() {
     }
   }
 
-  // New ajustes-mobile checks
+  // Single booking button checks
+  await checkSingleBookingButton(browser);
+
+  // Ajustes-mobile checks
   await checkNoAltitudeChipMobile(browser);
   await checkCardHeightMobile(browser);
   await checkFilterPinCardCount(browser);

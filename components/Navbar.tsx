@@ -193,17 +193,7 @@ export default function Navbar({ locale }: { locale: Locale }) {
                   </a>
                 </li>
               ))}
-              <li className="mt-2">
-                <a
-                  href="https://wa.me/5492901489265?text=Hola%20Frecuencia%20Sur%2C%20quiero%20consultar%20sobre%20una%20excursi%C3%B3n."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setMenuOpen(false)}
-                  className="block rounded-full bg-brand-orange py-3 text-center text-sm font-bold uppercase tracking-wider text-white transition hover:brightness-110"
-                >
-                  {tr.reservar}
-                </a>
-              </li>
+              {/* RESERVAR removed from mobile menu — the fixed bottom bar handles it */}
             </ul>
           </motion.div>
         )}
