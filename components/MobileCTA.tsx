@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useLang } from "@/context/LangContext";
 import { trackLead } from "@/lib/tracking";
+import { excursionPorSlug } from "@/data/excursiones";
 
 const label: Record<string, string> = {
   es: "Reservar por WhatsApp",
@@ -10,43 +12,112 @@ const label: Record<string, string> = {
   pt: "Reservar pelo WhatsApp",
 };
 
+const DEFAULT_WA_URL =
+  "https://wa.me/5492901489265?text=Hola%20Frecuencia%20Sur%2C%20quiero%20consultar%20sobre%20una%20excursi%C3%B3n.";
+
+/** Height of the bar (px) — used for content padding */
+export const MOBILE_BAR_H = 76;
+
 export default function MobileCTA() {
   const { lang } = useLang();
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
+  const ctaOverlapRef = useRef(false);
+  const footerOverlapRef = useRef(false);
+  const scrolledPastHeroRef = useRef(false);
+
+  // Detect excursion page and build specific WA URL
+  const excMatch = pathname.match(/\/excursiones\/([^/]+)/);
+  const excSlug = excMatch?.[1] ?? null;
+  const exc = excSlug ? excursionPorSlug(excSlug) : null;
+
+  let waUrl = DEFAULT_WA_URL;
+  if (exc && excSlug) {
+    const name = exc.nombre[lang as "es" | "en" | "pt"] ?? exc.nombre.es;
+    const waText = encodeURIComponent(
+      lang === "en"
+        ? `Hi! I'd like to book the ${name} tour. What dates do you have available?`
+        : lang === "pt"
+          ? `Ol\u00e1! Quero reservar a excurs\u00e3o ${name}. Quais datas voc\u00eas t\u00eam dispon\u00edveis?`
+          : `Hola! Quiero reservar la excursi\u00f3n ${name}. \u00bfQu\u00e9 fechas tienen disponibles?`
+    );
+    waUrl = `https://wa.me/5492901489265?text=${waText}`;
+  }
 
   useEffect(() => {
+    function update() {
+      setVisible(
+        scrolledPastHeroRef.current &&
+          !ctaOverlapRef.current &&
+          !footerOverlapRef.current
+      );
+    }
+
+    // --- Scroll: show after hero ---
     const onScroll = () => {
-      // Show after scrolling past hero (roughly 100vh)
-      const show = window.scrollY > window.innerHeight * 0.8;
-
-      // Hide near footer
-      const footer = document.querySelector("footer");
-      if (footer) {
-        const rect = footer.getBoundingClientRect();
-        if (rect.top < window.innerHeight) {
-          setVisible(false);
-          return;
-        }
-      }
-
-      setVisible(show);
+      scrolledPastHeroRef.current = window.scrollY > window.innerHeight * 0.8;
+      update();
     };
-
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
-  if (!visible) return null;
+    // --- IntersectionObserver: inline CTA buttons ---
+    const visibleCtas = new Set<Element>();
+    const ctaObserver = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) visibleCtas.add(e.target);
+          else visibleCtas.delete(e.target);
+        }
+        ctaOverlapRef.current = visibleCtas.size > 0;
+        update();
+      },
+      { threshold: 0, rootMargin: "100px 0px 100px 0px" }
+    );
+
+    // Observe all inline booking buttons (not the bar itself)
+    const ctaEls = document.querySelectorAll(
+      '[data-cta-position]:not([data-cta-position="barra-mobile"])'
+    );
+    ctaEls.forEach((el) => ctaObserver.observe(el));
+
+    // --- IntersectionObserver: footer ---
+    const footerObserver = new IntersectionObserver(
+      (entries) => {
+        footerOverlapRef.current = entries.some((e) => e.isIntersecting);
+        update();
+      },
+      { threshold: 0 }
+    );
+    const footer = document.querySelector("footer");
+    if (footer) footerObserver.observe(footer);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      ctaObserver.disconnect();
+      footerObserver.disconnect();
+    };
+  }, [pathname]);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-3 md:hidden" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}>
+    <div
+      data-cta-position="barra-mobile"
+      className="fixed bottom-0 left-0 right-0 z-50 p-3 transition-opacity duration-300 md:hidden"
+      style={{
+        paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))",
+        opacity: visible ? 1 : 0,
+        pointerEvents: visible ? "auto" : "none",
+      }}
+    >
       <a
-        href="https://wa.me/5492901489265?text=Hola%20Frecuencia%20Sur%2C%20quiero%20consultar%20sobre%20una%20excursi%C3%B3n."
+        href={waUrl}
         target="_blank"
         rel="noopener noreferrer"
         onClick={() =>
-          trackLead({ content_name: "home", cta_position: "mobile_bar" })
+          trackLead({
+            content_name: excSlug ?? "home",
+            cta_position: "barra-mobile",
+          })
         }
         className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-brand-orange text-base font-bold uppercase tracking-wider text-white shadow-lg transition hover:brightness-110"
       >

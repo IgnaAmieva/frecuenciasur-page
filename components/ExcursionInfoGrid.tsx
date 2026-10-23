@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Mountain,
   Map,
@@ -10,9 +9,7 @@ import {
   CloudSun,
   Backpack,
   Info,
-  ChevronDown,
 } from "lucide-react";
-import { motion } from "framer-motion";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Mountain,
@@ -44,8 +41,6 @@ export default function ExcursionInfoGrid({
   infoAdicional,
   locale,
 }: Props) {
-  const [openPanel, setOpenPanel] = useState<string | null>(null);
-
   return (
     <div>
       <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
@@ -66,64 +61,40 @@ export default function ExcursionInfoGrid({
 
         {/* Equipamiento circle */}
         <div className="flex flex-col items-center text-center">
-          <button
-            onClick={() =>
-              setOpenPanel(openPanel === "equip" ? null : "equip")
-            }
-            className="mb-3 flex h-[90px] w-[90px] items-center justify-center rounded-full bg-brand-orange transition-transform hover:scale-105"
-            aria-expanded={openPanel === "equip"}
-          >
+          <div className="mb-3 flex h-[90px] w-[90px] items-center justify-center rounded-full bg-brand-orange">
             <Backpack className="h-8 w-8 text-white" />
-          </button>
+          </div>
           <p className="text-sm font-bold text-brand-text">
             {locale === "en" ? "Equipment" : locale === "pt" ? "Equipamento" : "Equipamiento"}
           </p>
-          <ChevronDown
-            size={16}
-            className={`mt-1 text-brand-text-secondary transition-transform ${
-              openPanel === "equip" ? "rotate-180" : ""
-            }`}
-          />
         </div>
 
         {/* Info Adicional circle */}
         <div className="flex flex-col items-center text-center">
-          <button
-            onClick={() =>
-              setOpenPanel(openPanel === "info" ? null : "info")
-            }
-            className="mb-3 flex h-[90px] w-[90px] items-center justify-center rounded-full bg-brand-orange transition-transform hover:scale-105"
-            aria-expanded={openPanel === "info"}
-          >
+          <div className="mb-3 flex h-[90px] w-[90px] items-center justify-center rounded-full bg-brand-orange">
             <Info className="h-8 w-8 text-white" />
-          </button>
+          </div>
           <p className="text-sm font-bold text-brand-text">
             {locale === "en" ? "Additional Info" : "Info Adicional"}
           </p>
-          <ChevronDown
-            size={16}
-            className={`mt-1 text-brand-text-secondary transition-transform ${
-              openPanel === "info" ? "rotate-180" : ""
-            }`}
-          />
         </div>
       </div>
 
-      {/* Dropdown panels */}
-      <motion.div
-        initial={false}
-        animate={{
-          height: openPanel ? "auto" : 0,
-          opacity: openPanel ? 1 : 0,
-        }}
-        transition={{ duration: 0.3 }}
-        className="overflow-hidden"
-      >
-        <div className="mt-6 rounded-xl bg-brand-text/90 p-6 text-sm leading-relaxed text-white">
-          {openPanel === "equip" && equipamiento}
-          {openPanel === "info" && infoAdicional}
+      {/* Always-visible panels */}
+      <div className="mt-6 space-y-4">
+        <div className="rounded-xl bg-brand-text/90 p-6 text-sm leading-relaxed text-white">
+          <p className="mb-1 text-xs font-bold uppercase tracking-wider text-white/60">
+            {locale === "en" ? "Equipment" : locale === "pt" ? "Equipamento" : "Equipamiento"}
+          </p>
+          {equipamiento}
         </div>
-      </motion.div>
+        <div className="rounded-xl bg-brand-text/90 p-6 text-sm leading-relaxed text-white">
+          <p className="mb-1 text-xs font-bold uppercase tracking-wider text-white/60">
+            {locale === "en" ? "Additional Info" : "Info Adicional"}
+          </p>
+          {infoAdicional}
+        </div>
+      </div>
     </div>
   );
 }
