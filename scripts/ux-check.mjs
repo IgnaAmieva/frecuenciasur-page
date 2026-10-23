@@ -903,9 +903,12 @@ async function checkElevationProfiles(browser) {
       const texts = [...profileSvg.querySelectorAll("text")];
       const textContents = texts.map(t => t.textContent.trim());
 
-      // Find the last km label (should be totalKm)
-      const kmLabels = textContents.filter(t => /^\d+(\.\d+)?$/.test(t));
-      const lastKm = kmLabels.length > 0 ? parseFloat(kmLabels[kmLabels.length - 1]) : null;
+      // Find totalKm from the indicator text "km X de Y" or "km X of Y"
+      // This is more reliable than reading X-axis marks (which are integers only)
+      const indicatorEl = document.querySelector("[class*='tabular-nums']");
+      const indicatorText = indicatorEl ? indicatorEl.textContent.trim() : "";
+      const kmMatch = indicatorText.match(/(?:de|of)\s+(\d+(?:\.\d+)?)/);
+      const lastKm = kmMatch ? parseFloat(kmMatch[1]) : null;
 
       // Find meter labels on Y axis
       const mLabels = textContents.filter(t => /^\d+ m$/.test(t));
@@ -916,9 +919,10 @@ async function checkElevationProfiles(browser) {
         t.length > 2 && !/^\d+(\.\d+)?$/.test(t) && !/^\d+ m$/.test(t) && t !== "Km" && t !== "de" && t !== "of"
       );
 
-      // Check legend below profile
-      const parent = profileSvg.closest("div")?.parentElement;
-      const legendP = parent ? parent.querySelector("p") : null;
+      // Check legend below profile — search all <p> in ancestor for "aproximado"
+      const ancestor = profileSvg.closest("div")?.parentElement?.parentElement;
+      const allPs = ancestor ? [...ancestor.querySelectorAll("p")] : [];
+      const legendP = allPs.find(p => /aproximado|approximate|aproximado/i.test(p.textContent));
       const legendText = legendP ? legendP.textContent.trim() : "";
 
       // Check path elements for monotonicity (y values in the SVG polyline/path)
