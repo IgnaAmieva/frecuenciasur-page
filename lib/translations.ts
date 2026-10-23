@@ -126,7 +126,7 @@ export const t = {
     cumbre_ver: "Ver excursiones",
     perfil_km: "Km",
     perfil_de: "de",
-    perfil_nota: "Perfil aproximado",
+    perfil_nota: "Perfil aproximado. Se actualizará con el track GPS real.",
   },
   en: {
     nav_nosotros: "About Us",
@@ -255,7 +255,7 @@ export const t = {
     cumbre_ver: "See excursions",
     perfil_km: "Km",
     perfil_de: "of",
-    perfil_nota: "Approximate profile",
+    perfil_nota: "Approximate profile. Will be updated with the real GPS track.",
   },
   pt: {
     nav_nosotros: "Sobre nós",
@@ -384,7 +384,7 @@ export const t = {
     cumbre_ver: "Ver excursões",
     perfil_km: "Km",
     perfil_de: "de",
-    perfil_nota: "Perfil aproximado",
+    perfil_nota: "Perfil aproximado. Será atualizado com o track GPS real.",
   },
 } as const;
 

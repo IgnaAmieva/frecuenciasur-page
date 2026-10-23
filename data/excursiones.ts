@@ -143,7 +143,7 @@ export const excursiones: Excursion[] = [
     },
     dificultad: { es: "Media / Alta", en: "Medium / High", pt: "Média / Alta" },
     distancia: { es: "15 km", en: "15 km", pt: "15 km" },
-    desnivel: { es: "650 m", en: "650 m", pt: "650 m" },
+    desnivel: { es: "650 m", en: "650 m", pt: "650 m" }, // CONFIRMAR CON GUÍA — fuente oficial dice 350 m
     duracion: { es: "7 horas", en: "7 hours", pt: "7 horas" },
     incluye: [
       { key: "guia", label: { es: "Guía profesional", en: "Professional guide", pt: "Guia profissional" } },
@@ -191,9 +191,9 @@ export const excursiones: Excursion[] = [
       pt: "A excursão mais desafiadora: subida glaciar com vistas privilegiadas do Fim do Mundo.",
     },
     dificultad: { es: "Alta", en: "High", pt: "Alta" },
-    distancia: { es: "20 km", en: "20 km", pt: "20 km" },
-    desnivel: { es: "900 m", en: "900 m", pt: "900 m" },
-    duracion: { es: "8 horas", en: "8 hours", pt: "8 horas" },
+    distancia: { es: "20 km", en: "20 km", pt: "20 km" }, // CONFIRMAR CON GUÍA — Headout dice ~21 km
+    desnivel: { es: "900 m", en: "900 m", pt: "900 m" }, // CONFIRMAR CON GUÍA — Headout dice ~1200 m
+    duracion: { es: "8 horas", en: "8 hours", pt: "8 horas" }, // CONFIRMAR CON GUÍA — Headout dice 12 h
     incluye: [
       { key: "guia", label: { es: "Guía profesional", en: "Professional guide", pt: "Guia profissional" } },
       { key: "traslado", label: { es: "Traslado ida y vuelta", en: "Round-trip transfer", pt: "Traslado ida e volta" } },
@@ -243,8 +243,8 @@ export const excursiones: Excursion[] = [
       pt: "Trekking por um canto pristino com vistas privilegiadas da Cordilheira Fueguina.",
     },
     dificultad: { es: "Alta", en: "High", pt: "Alta" },
-    distancia: { es: "13 km ida y vuelta", en: "13 km round trip", pt: "13 km ida e volta" },
-    desnivel: { es: "800 m", en: "800 m", pt: "800 m" },
+    distancia: { es: "13 km ida y vuelta", en: "13 km round trip", pt: "13 km ida e volta" }, // CONFIRMAR CON GUÍA — blog dice 11 km
+    desnivel: { es: "800 m", en: "800 m", pt: "800 m" }, // CONFIRMAR CON GUÍA — blog dice ~910 m
     duracion: { es: "8 horas", en: "8 hours", pt: "8 horas" },
     incluye: [
       { key: "guia", label: { es: "Guía de Montaña", en: "Mountain Guide", pt: "Guia de Montanha" } },
@@ -346,8 +346,8 @@ export const excursiones: Excursion[] = [
       pt: "Subida com vistas panorâmicas de Ushuaia, o Canal Beagle e as ilhas desde o cume.",
     },
     dificultad: { es: "Media", en: "Medium", pt: "Média" },
-    distancia: { es: "9 km ida y vuelta", en: "9 km round trip", pt: "9 km ida e volta" },
-    desnivel: { es: "500 m", en: "500 m", pt: "500 m" },
+    distancia: { es: "9 km ida y vuelta", en: "9 km round trip", pt: "9 km ida e volta" }, // CONFIRMAR CON GUÍA — oficial dice 7 km
+    desnivel: { es: "500 m", en: "500 m", pt: "500 m" }, // CONFIRMAR CON GUÍA — oficial dice cumbre a 500 m s.n.m.
     duracion: { es: "5 horas", en: "5 hours", pt: "5 horas" },
     incluye: [
       { key: "guia", label: { es: "Guía de Montaña", en: "Mountain Guide", pt: "Guia de Montanha" } },

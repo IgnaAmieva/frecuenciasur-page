@@ -8,10 +8,12 @@ import { t } from "@/lib/translations";
 import { useLang } from "@/context/LangContext";
 
 /* ───────────── SVG layout constants ───────────── */
-const P = { w: 640, h: 220, l: 30, r: 14, t: 40, b: 26 };
+const P = { w: 640, h: 220, l: 44, r: 14, t: 40, b: 26 };
 const X = (km: number, totalKm: number) =>
   P.l + (km / totalKm) * (P.w - P.l - P.r);
-const Y = (alt: number) => P.h - P.b - alt * (P.h - P.t - P.b);
+/** Y position: alt in meters, desnivelM = max elevation gain */
+const Y = (alt: number, desnivelM: number) =>
+  P.h - P.b - (alt / desnivelM) * (P.h - P.t - P.b);
 
 /* ───────────── helpers ───────────── */
 function lerp(pts: { km: number; alt: number }[], km: number): number {
@@ -37,6 +39,7 @@ function ElevationSvg({
   slug,
   points,
   totalKm,
+  desnivelM,
   hitos,
   currentKm,
   activeHitoIdx,
@@ -46,6 +49,7 @@ function ElevationSvg({
   slug: string;
   points: { km: number; alt: number }[];
   totalKm: number;
+  desnivelM: number;
   hitos: { km: number; label: Record<string, string> }[];
   currentKm: number;
   activeHitoIdx: number;
@@ -53,7 +57,7 @@ function ElevationSvg({
   compact?: boolean;
 }) {
   const pathD = points
-    .map((p, i) => `${i === 0 ? "M" : "L"}${X(p.km, totalKm).toFixed(1)},${Y(p.alt).toFixed(1)}`)
+    .map((p, i) => `${i === 0 ? "M" : "L"}${X(p.km, totalKm).toFixed(1)},${Y(p.alt, desnivelM).toFixed(1)}`)
     .join(" ");
 
   const areaD =
@@ -64,10 +68,17 @@ function ElevationSvg({
   const clipX = X(currentKm, totalKm);
   const hikerAlt = lerp(points, currentKm);
   const hikerX = X(currentKm, totalKm);
-  const hikerY = Y(hikerAlt);
+  const hikerY = Y(hikerAlt, desnivelM);
 
+  // X-axis: km marks
   const kmMarks: number[] = [];
   for (let k = 0; k <= totalKm; k++) kmMarks.push(k);
+
+  // Y-axis: elevation marks in meters (3-4 marks)
+  const elevMarks: number[] = [];
+  const step = desnivelM <= 400 ? 100 : desnivelM <= 700 ? 200 : 300;
+  for (let m = 0; m <= desnivelM; m += step) elevMarks.push(m);
+  if (elevMarks[elevMarks.length - 1] < desnivelM) elevMarks.push(desnivelM);
 
   return (
     <svg
@@ -84,6 +95,21 @@ function ElevationSvg({
         </clipPath>
       </defs>
 
+      {/* Y-axis: elevation in meters */}
+      {!compact && elevMarks.map((m) => (
+        <g key={`elev-${m}`}>
+          <line
+            x1={P.l} y1={Y(m, desnivelM)}
+            x2={P.w - P.r} y2={Y(m, desnivelM)}
+            stroke="#f0f0f0" strokeWidth={0.5}
+          />
+          <text x={P.l - 6} y={Y(m, desnivelM) + 3} textAnchor="end" fontSize={9} fill="#999">
+            {m}
+          </text>
+        </g>
+      ))}
+
+      {/* X-axis: km marks */}
       {!compact && kmMarks.map((k) => (
         <g key={`grid-${k}`}>
           <line
@@ -105,7 +131,7 @@ function ElevationSvg({
 
       {hitos.map((h, i) => {
         const hx = X(h.km, totalKm);
-        const hy = Y(lerp(points, h.km));
+        const hy = Y(lerp(points, h.km), desnivelM);
         const active = i <= activeHitoIdx;
         return (
           <g key={`hito-${i}`}>
@@ -227,7 +253,7 @@ export default function ElevationProfile({ slug, locale }: Props) {
 
   if (!data) return null;
 
-  const { totalKm, points, hitos } = data;
+  const { totalKm, desnivelM, points, hitos, hasGpx } = data;
   const currentKm = progress * totalKm;
 
   const activeHitoIdx = hitos.reduce(
@@ -262,7 +288,7 @@ export default function ElevationProfile({ slug, locale }: Props) {
         </div>
         <div className="px-5 pb-2">
           <ElevationSvg
-            slug={slug} points={points} totalKm={totalKm} hitos={hitos}
+            slug={slug} points={points} totalKm={totalKm} desnivelM={desnivelM} hitos={hitos}
             currentKm={currentKm} activeHitoIdx={activeHitoIdx} locale={locale}
             compact
           />
@@ -342,12 +368,14 @@ export default function ElevationProfile({ slug, locale }: Props) {
 
             <div className="rounded-2xl bg-white p-5 shadow-md mb-6">
               <ElevationSvg
-                slug={slug} points={points} totalKm={totalKm} hitos={hitos}
+                slug={slug} points={points} totalKm={totalKm} desnivelM={desnivelM} hitos={hitos}
                 currentKm={currentKm} activeHitoIdx={activeHitoIdx} locale={locale}
               />
-              <p className="mt-2 text-center text-[13px]" style={{ color: "#2B2B2B" }}>
-                {tr.perfil_nota}
-              </p>
+              {!hasGpx && (
+                <p className="mt-2 text-center text-[13px]" style={{ color: "#2B2B2B" }}>
+                  {tr.perfil_nota}
+                </p>
+              )}
             </div>
           </div>
         </div>
