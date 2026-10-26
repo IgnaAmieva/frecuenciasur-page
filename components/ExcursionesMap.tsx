@@ -353,7 +353,7 @@ const MapSvg: FC<MapSvgProps> = ({ activeSlug, filter, viewBox, onPinClick, loca
       viewBox={vb}
       className="w-full h-full"
       role="img"
-      aria-label="Mapa de excursiones en Ushuaia"
+      aria-label={labels.aria_map}
     >
       <rect x="0" y="0" width="600" height="440" fill="#FAFAF8" />
 
@@ -726,6 +726,9 @@ const ExcursionesMap: FC<{ locale: Locale }> = ({ locale }) => {
   const filterLabel = useCallback(
     (key: DifficultyKey): string => {
       if (key === "Todas") return labels.map_filter_todas;
+      if (key === "Media") return labels.diff_media;
+      if (key === "Media / Alta") return labels.diff_media_alta;
+      if (key === "Alta") return labels.diff_alta;
       return key;
     },
     [labels]
@@ -740,7 +743,7 @@ const ExcursionesMap: FC<{ locale: Locale }> = ({ locale }) => {
         {labels.map_subtitle}
       </p>
 
-      <div className="flex flex-wrap justify-center gap-2 mb-6" role="group" aria-label="Filtrar por dificultad">
+      <div className="flex flex-wrap justify-center gap-2 mb-6" role="group" aria-label={labels.aria_filter_diff}>
         {DIFFICULTY_FILTERS.map((f) => {
           const isActive = filter === f.key;
           return (
@@ -770,7 +773,7 @@ const ExcursionesMap: FC<{ locale: Locale }> = ({ locale }) => {
         >
           {/* Mobile map title */}
           <span className="absolute top-2 left-3 z-10 text-xs font-medium text-[#111] min-[900px]:hidden">
-            {effectiveLocale === "en" ? "Excursion map" : effectiveLocale === "pt" ? "Mapa de excursões" : "Mapa de excursiones"}
+            {labels.aria_excursion_map}
           </span>
           <MapSvg
             activeSlug={activeSlug}

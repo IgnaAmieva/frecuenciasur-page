@@ -148,7 +148,7 @@ export default function Navbar({ locale }: { locale: Locale }) {
 
           {/* RESERVAR — always visible */}
           <a
-            href="https://wa.me/5492901489265?text=Hola%20Frecuencia%20Sur%2C%20quiero%20consultar%20sobre%20una%20excursi%C3%B3n."
+            href={`https://wa.me/5492901489265?text=${encodeURIComponent(tr.wa_generic)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="hidden min-h-[44px] items-center justify-center rounded-full bg-brand-orange px-5 text-xs font-bold uppercase tracking-wider text-white transition hover:brightness-110 md:inline-flex"
@@ -160,7 +160,7 @@ export default function Navbar({ locale }: { locale: Locale }) {
             onClick={() => setMenuOpen(!menuOpen)}
             style={{ color: scrolled ? "#1f2937" : "white" }}
             className="transition-colors duration-300 md:hidden"
-            aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-label={menuOpen ? tr.aria_close_menu : tr.aria_open_menu}
           >
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>

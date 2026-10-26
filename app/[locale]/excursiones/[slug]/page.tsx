@@ -4,6 +4,7 @@ import { excursiones, excursionPorSlug } from "@/data/excursiones";
 import { locales, type Locale } from "@/lib/i18n";
 import { excursionSeo, metadataBase } from "@/lib/seo";
 import { localePath } from "@/lib/locale-utils";
+import { t } from "@/lib/translations";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ExcursionInfoGrid from "@/components/ExcursionInfoGrid";
@@ -106,6 +107,7 @@ export default async function ExcursionPage({
   if (!exc) notFound();
 
   const seo = excursionSeo[slug]?.[locale];
+  const tr = t[locale];
   const h1 = seo?.h1 ?? exc.nombre[locale];
   const descriptionParagraphs = seo?.description ?? [exc.descripcion[locale]];
   const alts = seo?.alts ?? [exc.nombre[locale]];
@@ -131,11 +133,7 @@ export default async function ExcursionPage({
 
   // WhatsApp booking URL
   const waText = encodeURIComponent(
-    locale === "en"
-      ? `Hi! I'd like to book the ${h1} tour. What dates do you have available?`
-      : locale === "pt"
-        ? `Olá! Quero reservar a excursão ${h1}. Quais datas vocês têm disponíveis?`
-        : `Hola! Quiero reservar la excursión ${h1}. ¿Qué fechas tienen disponibles?`
+    `${tr.wa_reserva_pre} ${h1}. ${tr.wa_reserva_post}`
   );
   const waUrl = `https://wa.me/5492901489265?text=${waText}`;
 
@@ -175,50 +173,42 @@ export default async function ExcursionPage({
           <section className="px-5 py-16">
             <div className="mx-auto max-w-4xl">
               <h2 className="mb-2 text-center text-2xl font-extrabold md:text-3xl" style={{ color: "#111" }}>
-                {locale === "en"
-                  ? "Trail Information"
-                  : locale === "pt"
-                    ? "Informação do Percurso"
-                    : "Información del Recorrido"}
+                {tr.info_recorrido}
               </h2>
               <p className="mb-12 text-center text-sm text-brand-text-secondary">
-                {locale === "en"
-                  ? "Everything you need to know before your adventure"
-                  : locale === "pt"
-                    ? "Tudo o que você precisa saber antes da sua aventura"
-                    : "Todo lo que necesitás saber antes de tu aventura"}
+                {tr.info_recorrido_sub}
               </p>
 
               <ExcursionInfoGrid
                 items={[
                   {
                     icon: "Mountain",
-                    label: locale === "en" ? "Difficulty" : locale === "pt" ? "Dificuldade" : "Dificultad",
+                    label: tr.dificultad,
                     value: exc.dificultad[locale],
                   },
                   {
                     icon: "Map",
-                    label: locale === "en" ? "Distance" : locale === "pt" ? "Distância" : "Distancia",
+                    label: tr.distancia,
                     value: exc.distancia[locale],
                   },
                   {
                     icon: "Clock",
-                    label: locale === "en" ? "Duration" : locale === "pt" ? "Duração" : "Duración",
+                    label: tr.duracion,
                     value: exc.duracion[locale],
                   },
                   {
                     icon: "TrendingUp",
-                    label: locale === "en" ? "Elevation gain" : locale === "pt" ? "Desnível" : "Desnivel",
+                    label: tr.desnivel,
                     value: exc.desnivel[locale],
                   },
                   {
                     icon: "Calendar",
-                    label: "Pick Up",
+                    label: tr.pick_up,
                     value: exc.pickUp[locale],
                   },
                   {
                     icon: "CloudSun",
-                    label: locale === "en" ? "Weather" : "Clima",
+                    label: tr.clima,
                     value: exc.clima[locale],
                   },
                 ]}
@@ -264,11 +254,7 @@ export default async function ExcursionPage({
           <section className="px-5 py-16">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="mb-8 text-2xl font-extrabold" style={{ color: "#1a1a1a" }}>
-                {locale === "en"
-                  ? "What's included"
-                  : locale === "pt"
-                    ? "O que inclui"
-                    : "Qué incluye"}
+                {tr.que_incluye}
               </h2>
               <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
                 {exc.incluye.map((item) => {

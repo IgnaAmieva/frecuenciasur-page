@@ -4,6 +4,8 @@ import { useEffect, useCallback, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
 
 interface Props {
   images: string[];
@@ -13,6 +15,8 @@ interface Props {
 }
 
 export default function Lightbox({ images, labels, initialIndex, onClose }: Props) {
+  const { lang } = useLang();
+  const tr = t[lang];
   const [index, setIndex] = useState(initialIndex);
 
   const prev = useCallback(() => {
@@ -49,7 +53,7 @@ export default function Lightbox({ images, labels, initialIndex, onClose }: Prop
       {/* Close */}
       <button
         onClick={onClose}
-        aria-label="Cerrar"
+        aria-label={tr.aria_close}
         className="fixed right-4 top-4 z-[101] flex h-11 w-11 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30"
       >
         <X size={22} />
@@ -61,7 +65,7 @@ export default function Lightbox({ images, labels, initialIndex, onClose }: Prop
           e.stopPropagation();
           prev();
         }}
-        aria-label="Anterior"
+        aria-label={tr.aria_prev}
         className="fixed left-3 top-1/2 z-[101] flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30"
       >
         <ChevronLeft size={24} />
@@ -73,7 +77,7 @@ export default function Lightbox({ images, labels, initialIndex, onClose }: Prop
           e.stopPropagation();
           next();
         }}
-        aria-label="Siguiente"
+        aria-label={tr.aria_next}
         className="fixed right-3 top-1/2 z-[101] flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30"
       >
         <ChevronRight size={24} />
@@ -94,7 +98,7 @@ export default function Lightbox({ images, labels, initialIndex, onClose }: Prop
           >
             <Image
               src={images[index]}
-              alt={labels?.[index] ?? `Foto ${index + 1}`}
+              alt={labels?.[index] ?? `${tr.aria_go_photo} ${index + 1}`}
               width={1920}
               height={1080}
               className="max-h-[85vh] max-w-[90vw] object-contain"
@@ -121,7 +125,7 @@ export default function Lightbox({ images, labels, initialIndex, onClose }: Prop
               e.stopPropagation();
               setIndex(i);
             }}
-            aria-label={`Ir a foto ${i + 1}`}
+            aria-label={`${tr.aria_go_photo} ${i + 1}`}
             className={`h-2 w-2 rounded-full transition-colors ${
               i === index ? "bg-white" : "bg-white/30"
             }`}

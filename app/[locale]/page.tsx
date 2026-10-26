@@ -19,6 +19,7 @@ import Altimeter from "@/components/Altimeter";
 import SmoothScroll from "@/components/SmoothScroll";
 import { locales, type Locale } from "@/lib/i18n";
 import { homeSeo, metadataBase } from "@/lib/seo";
+import { t } from "@/lib/translations";
 
 function localeUrl(locale: Locale, path: string = "") {
   const prefix = locale === "es" ? "" : `/${locale}`;
@@ -71,6 +72,7 @@ export default async function Home({
 }) {
   const { locale: loc } = await params;
   const locale = (locales.includes(loc as Locale) ? loc : "es") as Locale;
+  const tr = t[locale];
 
   return (
     <>
@@ -90,23 +92,23 @@ export default async function Home({
           }}
         />
         <div className="relative">
-          <div data-alt="Bosque de lenga">
+          <div data-alt={tr.alt_bosque}>
             <ExcursionesMap locale={locale} />
           </div>
-          <div data-alt="Turbal">
+          <div data-alt={tr.alt_turbal}>
             <Quiz />
           </div>
-          <div data-alt="Valle glaciar">
+          <div data-alt={tr.alt_valle}>
             <Ventajas />
           </div>
           <Reviews />
-          <div data-alt="Refugio">
+          <div data-alt={tr.alt_refugio}>
             <div className="flex flex-col md:flex-row md:gap-8 max-w-6xl mx-auto px-5">
               <div className="md:flex-1"><QueIncluye /></div>
               <div className="md:flex-1"><Mochila /></div>
             </div>
           </div>
-          <div data-alt="Laguna">
+          <div data-alt={tr.alt_laguna}>
             <Nosotros />
             <FAQ locale={locale} />
           </div>
