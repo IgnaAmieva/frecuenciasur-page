@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
 
 interface Props {
   imagenes: string[];
@@ -23,6 +25,8 @@ export default function ExcursionHeroCarousel({
   objectPosition = "center center",
   alts = [],
 }: Props) {
+  const { lang } = useLang();
+  const tr = t[lang];
   const fotos = imagenes.length > 0 ? imagenes : [imagenHero];
   const [index, setIndex] = useState(0);
 
@@ -93,7 +97,7 @@ export default function ExcursionHeroCarousel({
             <button
               key={i}
               onClick={() => setIndex(i)}
-              aria-label={`Ir a foto ${i + 1}`}
+              aria-label={`${tr.aria_go_photo} ${i + 1}`}
               className={`h-2.5 w-2.5 rounded-full transition-colors ${
                 i === index ? "bg-white" : "bg-white/40"
               }`}

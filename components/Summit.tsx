@@ -3,17 +3,15 @@
 import { useLang } from "@/context/LangContext";
 import { t } from "@/lib/translations";
 
-const WA_URL =
-  "https://wa.me/5492901489265?text=Hola!%20Quiero%20reservar%20una%20excursi%C3%B3n";
-
 export default function Summit() {
   const { lang } = useLang();
   const tr = t[lang];
+  const WA_URL = `https://wa.me/5492901489265?text=${encodeURIComponent(tr.wa_generic)}`;
 
   return (
     <section
       id="cumbre"
-      data-alt="Cumbre"
+      data-alt={tr.alt_cumbre}
       className="relative overflow-hidden px-5 py-16 md:py-24 text-center"
       style={{
         background:

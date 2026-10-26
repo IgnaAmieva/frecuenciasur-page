@@ -1,12 +1,20 @@
 "use client";
 
+import { useLang } from "@/context/LangContext";
+import { t } from "@/lib/translations";
+
 export default function WhatsAppFloat() {
+  const { lang } = useLang();
+  const tr = t[lang];
+
+  const waMsg = encodeURIComponent(tr.wa_generic);
+
   return (
     <a
-      href="https://wa.me/5492901489265"
+      href={`https://wa.me/5492901489265?text=${waMsg}`}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Contactar por WhatsApp"
+      aria-label={tr.aria_wa_contact}
       className="fixed bottom-20 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-green-500/30 transition-transform hover:scale-110 md:bottom-6"
     >
       <svg viewBox="0 0 24 24" width="28" height="28" style={{ color: "white" }} fill="white">

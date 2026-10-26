@@ -108,14 +108,14 @@ export default function Galeria() {
           {/* Prev / Next */}
           <button
             onClick={() => go(-1)}
-            aria-label="Anterior"
+            aria-label={tr.aria_prev}
             className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-brand-orange shadow backdrop-blur transition hover:bg-brand-orange hover:text-white"
           >
             <ChevronLeft size={24} />
           </button>
           <button
             onClick={() => go(1)}
-            aria-label="Siguiente"
+            aria-label={tr.aria_next}
             className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-brand-orange shadow backdrop-blur transition hover:bg-brand-orange hover:text-white"
           >
             <ChevronRight size={24} />
@@ -131,7 +131,7 @@ export default function Galeria() {
                 setDirection(i > index ? 1 : -1);
                 setIndex(i);
               }}
-              aria-label={`Ir a foto ${i + 1}`}
+              aria-label={`${tr.aria_go_photo} ${i + 1}`}
               className={`h-2.5 w-2.5 rounded-full transition-colors ${
                 i === index ? "bg-brand-orange" : "bg-gray-300"
               }`}

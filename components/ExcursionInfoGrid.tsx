@@ -11,6 +11,9 @@ import {
   Info,
 } from "lucide-react";
 
+import { t } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
+
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Mountain,
   Map,
@@ -41,6 +44,8 @@ export default function ExcursionInfoGrid({
   infoAdicional,
   locale,
 }: Props) {
+  const tr = t[(locale as Locale) ?? "es"];
+
   return (
     <div>
       <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
@@ -65,7 +70,7 @@ export default function ExcursionInfoGrid({
             <Backpack className="h-8 w-8 text-white" />
           </div>
           <p className="text-sm font-bold text-brand-text">
-            {locale === "en" ? "Equipment" : locale === "pt" ? "Equipamento" : "Equipamiento"}
+            {tr.equipamiento}
           </p>
         </div>
 
@@ -75,7 +80,7 @@ export default function ExcursionInfoGrid({
             <Info className="h-8 w-8 text-white" />
           </div>
           <p className="text-sm font-bold text-brand-text">
-            {locale === "en" ? "Additional Info" : "Info Adicional"}
+            {tr.info_adicional}
           </p>
         </div>
       </div>
@@ -84,13 +89,13 @@ export default function ExcursionInfoGrid({
       <div className="mt-6 space-y-4">
         <div className="rounded-xl bg-brand-text/90 p-6 text-sm leading-relaxed text-white">
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-white/60">
-            {locale === "en" ? "Equipment" : locale === "pt" ? "Equipamento" : "Equipamiento"}
+            {tr.equipamiento}
           </p>
           {equipamiento}
         </div>
         <div className="rounded-xl bg-brand-text/90 p-6 text-sm leading-relaxed text-white">
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-white/60">
-            {locale === "en" ? "Additional Info" : "Info Adicional"}
+            {tr.info_adicional}
           </p>
           {infoAdicional}
         </div>
