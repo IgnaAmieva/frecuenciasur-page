@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import IntroLoaderWrapper from "@/components/IntroLoaderWrapper";
 // TrustBar removed — trust line now lives inside Hero
 import ExcursionesMap from "@/components/ExcursionesMap";
 import Quiz from "@/components/Quiz";
@@ -79,6 +80,7 @@ export default async function Home({
       <JsonLdTravelAgency />
       <SmoothScroll />
       <Altimeter />
+      <IntroLoaderWrapper />
       <Navbar locale={locale} />
       <Hero locale={locale} />
       <div className="relative z-[5] bg-white">

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
+import gsap from "gsap";
 import { useLang } from "@/context/LangContext";
 import { t } from "@/lib/translations";
 import { homeSeo } from "@/lib/seo";
@@ -91,6 +92,47 @@ export default function Hero({ locale }: { locale: Locale }) {
   const [photoIdx, setPhotoIdx] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const reducedMotion = useRef(false);
+  const [introReady, setIntroReady] = useState(false);
+
+  /* ── Hero entrance animation after IntroLoader finishes ── */
+  const playEntrance = useCallback(() => {
+    if (reducedMotion.current) { setIntroReady(true); return; }
+    setIntroReady(true);
+
+    const firstPhoto = document.querySelector("[data-hero-photo-0]") as HTMLElement | null;
+    const titleLines = document.querySelectorAll("[data-hero-line]");
+    const buttons = document.querySelectorAll("[data-hero-btn]");
+
+    if (firstPhoto) {
+      gsap.fromTo(firstPhoto, { scale: 1.18 }, { scale: 1, duration: 1.4, ease: "power2.out" });
+    }
+    if (titleLines.length) {
+      gsap.fromTo(titleLines,
+        { yPercent: 110, opacity: 0 },
+        { yPercent: 0, opacity: 1, duration: 0.8, ease: "power3.out", stagger: 0.12 },
+      );
+    }
+    if (buttons.length) {
+      gsap.fromTo(buttons,
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7, ease: "back.out(1.7)", stagger: 0.1, delay: 0.4 },
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    // If intro was already seen, animate immediately
+    let skipIntro = false;
+    try { skipIntro = sessionStorage.getItem("intro-seen") === "1"; } catch { /* ok */ }
+    if (skipIntro || reducedMotion.current) {
+      setIntroReady(true);
+      return;
+    }
+
+    const onIntroDone = () => playEntrance();
+    window.addEventListener("intro-done", onIntroDone);
+    return () => window.removeEventListener("intro-done", onIntroDone);
+  }, [playEntrance]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -270,6 +312,7 @@ export default function Hero({ locale }: { locale: Locale }) {
             key={photo.src}
             className="absolute inset-0 transition-opacity duration-1000"
             style={{ opacity: i === photoIdx ? 1 : 0 }}
+            {...(i === 0 ? { "data-hero-photo-0": "" } : {})}
           >
             <Image
               src={photo.src}
@@ -312,11 +355,13 @@ export default function Hero({ locale }: { locale: Locale }) {
             <div className={`grid ${isMobile ? "gap-6 justify-items-center" : "gap-4 justify-items-start max-w-[640px]"}`}>
               {/* Kicker H1 */}
               <h1
+                data-hero-line=""
                 className={`font-semibold uppercase text-white/75 ${
                   isMobile
                     ? "text-[11px] tracking-[.14em] whitespace-nowrap"
                     : "text-[12px] tracking-[.25em]"
                 }`}
+                style={introReady ? undefined : { opacity: 0 }}
               >
                 {seo.h1}
               </h1>
@@ -337,20 +382,20 @@ export default function Hero({ locale }: { locale: Locale }) {
               >
                 {isMobile ? (
                   <>
-                    <span className="font-light">{tr.hero_titulo1a}</span>
+                    <span data-hero-line="" className="inline-block font-light" style={introReady ? undefined : { opacity: 0 }}>{tr.hero_titulo1a}</span>
                     <br />
-                    <span className="font-light">{tr.hero_titulo1b}</span>
+                    <span data-hero-line="" className="inline-block font-light" style={introReady ? undefined : { opacity: 0 }}>{tr.hero_titulo1b}</span>
                     <br />
-                    <span className="font-extrabold">{tr.hero_titulo2}</span>
+                    <span data-hero-line="" className="inline-block font-extrabold" style={introReady ? undefined : { opacity: 0 }}>{tr.hero_titulo2}</span>
                   </>
                 ) : (
                   <>
-                    <span className="font-light min-[900px]:whitespace-nowrap">
+                    <span data-hero-line="" className="inline-block font-light min-[900px]:whitespace-nowrap" style={introReady ? undefined : { opacity: 0 }}>
                       {tr.hero_titulo1}
                       <br className="min-[1420px]:hidden" />
                       {" "}
                     </span>
-                    <span className="font-extrabold">{tr.hero_titulo2}</span>
+                    <span data-hero-line="" className="inline-block font-extrabold" style={introReady ? undefined : { opacity: 0 }}>{tr.hero_titulo2}</span>
                   </>
                 )}
               </p>
@@ -366,14 +411,16 @@ export default function Hero({ locale }: { locale: Locale }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex h-[52px] items-center justify-center rounded-full border border-white/50 bg-white/15 px-7 text-sm font-semibold uppercase tracking-[.12em] text-white backdrop-blur-sm transition hover:bg-white/25"
-                  data-hero-btn
+                  data-hero-btn=""
+                  style={introReady ? undefined : { opacity: 0 }}
                 >
                   {tr.hero_boton}
                 </a>
                 <a
                   href="#excursiones"
                   className="inline-flex h-[52px] items-center justify-center rounded-full bg-brand-orange px-7 text-sm font-semibold uppercase tracking-[.12em] text-white transition hover:brightness-110"
-                  data-hero-btn
+                  data-hero-btn=""
+                  style={introReady ? undefined : { opacity: 0 }}
                 >
                   {tr.hero_ver_excursiones}
                 </a>
