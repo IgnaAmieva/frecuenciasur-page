@@ -56,12 +56,20 @@ export async function generateMetadata({
       siteName: "Frecuencia Sur Ushuaia",
       locale: locale === "es" ? "es_AR" : locale === "pt" ? "pt_BR" : "en_US",
       type: "website",
-      images: [{ url: "/images/logo/logo.png" }],
+      images: [
+        {
+          url: "/og.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Frecuencia Sur - Trekking y turismo aventura en Ushuaia",
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: seo.title,
       description: seo.description,
+      images: ["/og.jpg"],
     },
   };
 }

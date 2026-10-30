@@ -16,6 +16,7 @@ const inter = Inter({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#e85d04",
 };
 
 export function generateStaticParams() {
@@ -45,9 +46,13 @@ export async function generateMetadata({
     description: seo.description,
     keywords: seo.keywords,
     icons: {
-      icon: "/images/logo/logo.png",
-      apple: "/images/logo/logo.png",
+      icon: [
+        { url: "/favicon.ico", sizes: "48x48" },
+        { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      ],
+      apple: { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
     },
+    manifest: "/manifest.webmanifest",
     alternates: {
       canonical: localeUrl(locale),
       languages: {
@@ -64,11 +69,20 @@ export async function generateMetadata({
       siteName: "Frecuencia Sur Ushuaia",
       locale: locale === "es" ? "es_AR" : locale === "pt" ? "pt_BR" : "en_US",
       type: "website",
+      images: [
+        {
+          url: "/og.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Frecuencia Sur - Trekking y turismo aventura en Ushuaia",
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: seo.title,
       description: seo.description,
+      images: ["/og.jpg"],
     },
   };
 }
